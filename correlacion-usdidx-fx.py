@@ -147,7 +147,7 @@ def seleccionValor():
 		spamreader = csv.reader(csvfile, delimiter=';')
 		for row in spamreader:
 			valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
-			if "USDIDX" in valor or "IND" in tipo:
+			if "USDIDX" in valor or "FX" in tipo:
 			# if "CMD" in tipo:
 				data.append(valor)
 	
