@@ -34,19 +34,20 @@ quotes = quotes[(quotes.index >= date1) & (quotes.index <= date2)]
 fig, ax = plt.subplots(figsize=(20, 10))
 
 
-plot_day_summary_oclh(ax, zip(date2num(quotes.index.to_pydatetime()),
+ax1 = plt.subplot2grid((8,6), (0,0), colspan=5, rowspan=5)
+
+plot_day_summary_oclh(ax1, zip(date2num(quotes.index.to_pydatetime()),
                               quotes['apertura'], quotes['cierre'],
                               quotes['low'], quotes['high']),
                       ticksize=3)
-            
-                    
 
-                      
 
+
+ax2 = plt.subplot2grid((8,6), (5, 0), colspan=5) # plt.subplot(5, 1, 1, rowspan=3)
 plt.plot( zip(date2num(quotes.index.to_pydatetime())), quotes['ema[5]'])
 plt.plot( zip(date2num(quotes.index.to_pydatetime())), quotes['ema[50]'])
 
-# ax.xaxis.set_major_locator(mondays)
+
 ax.xaxis.set_major_locator(mondays)
 ax.xaxis.set_major_formatter(daysFmt)
 ax.autoscale_view()
@@ -54,5 +55,6 @@ ax.xaxis.grid(True, 'major')
 ax.grid(True)
 
 fig.autofmt_xdate()
+
 
 plt.show()
