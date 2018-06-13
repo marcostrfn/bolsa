@@ -16,8 +16,8 @@ import ConfigParser
 
 FILENAME = 'valores.csv'
 TIEMPO = 365 * 10
-RESOLUCIONES = ['30'] # ['1', '5', '15', '30', '60', 'D', 'W', 'M'] # ['1','60','D','M','W'] 
-TIPOS = None # ['IND'] # IND, FX, CMD, EQT
+RESOLUCIONES = ['30', '60'] # ['1', '5', '15', '30', '60', 'D', 'W', 'M'] # ['1','60','D','M','W'] 
+TIPOS = ['IND', 'FX', 'CMD']
 
 configuracion = 'configuracion.cfg'
 
@@ -32,7 +32,7 @@ if __name__ == '__main__':
 	valores = fd.cargar_valores_from_csv(TIPOS)
 	for row in valores:
 		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
-		if valor=='TNOTE':
+		if True: # valor=='BRENT':
 			
 			for resolucion in RESOLUCIONES:
 				uri = fd.create_url(codigo,resolucion,TIEMPO)

@@ -134,9 +134,9 @@ def procesar_valor(VALOR,CODIGO,RESOLUCION,DIRECTORIO_BASE):
 # INICIO
 # ===========================================================
 
-PROCESAR =  "ALL" # ['DE30', 'EURUSD'] # VALOR A PROCESAR
-RESOLUCIONES = ['1', '5', '15', '30', '60', 'D', 'W', 'M']
-TIPOS = None # ['IND'] # IND, FX, CMD, EQT NONE TODOS
+PROCESAR =  'ALL' # ['DE30', 'EURUSD'] # VALOR A PROCESAR
+RESOLUCIONES = ['30', '60']
+TIPOS = ['IND','FX','CMD'] # IND, FX, CMD, EQT NONE TODOS
 configuracion = 'configuracion.cfg'
 
 
