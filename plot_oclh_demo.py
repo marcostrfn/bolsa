@@ -68,11 +68,7 @@ plt.plot( zip(date2num(quotes.index.to_pydatetime())), quotes['ema[5]'])
 
 # ax.xaxis.set_major_locator(mondays)
 ax.xaxis.set_major_locator(horas)
-
-date = quotes.index.to_pydatetime()
-print date
-
-ax.xaxis.set_major_formatter(Jackarow('%Y-%m-%d'))
+ax.xaxis.set_major_formatter(daysFmt)
 ax.autoscale_view()
 ax.xaxis.grid(True, 'major')
 ax.grid(True)
