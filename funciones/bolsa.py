@@ -262,12 +262,15 @@ def calcular_estocastico(cierre, high, low, periodo=14, smoothd=3):
 		except:
 			calculo_estocastico = 0
 			
-			
+		if calculo_estocastico > 100: calculo_estocastico = 100	
+		if calculo_estocastico < 0: calculo_estocastico = 0
 		sk.append(calculo_estocastico)
 	
 	array_sd = ema_simple(sk,smoothd)
 	sd = []		
-	for c,v in array_sd.items():
+	for c,v in array_sd.items():	
+		if v > 100: v = 100	
+		if v < 0: v = 0	
 		sd.append(v)
 	
 	return (sk,sd)
