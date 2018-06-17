@@ -1,3 +1,6 @@
+#! /usr/bin/env/python
+# -*- coding: utf-8 -*-
+
 from __future__ import print_function
 from datetime import datetime, timedelta
 from time import mktime
@@ -5,7 +8,421 @@ import urllib, json, os
 import ssl, csv
 import ConfigParser
 
+import bolsa as fb
+import graficos as fg
 
+
+def escribir_csv_resultados_pivot(resultados):
+	
+	config = ConfigParser.ConfigParser()
+	config.read('configuracion.cfg')
+	directorio_base = config.get('data', 'directorio_base')
+
+	directorio_destino =  os.path.join(directorio_base,'result')
+	if not os.path.exists(directorio_destino):
+		os.makedirs(directorio_destino)
+		print ("creando directorio.... {}".format(directorio_destino))
+	
+	
+	filename = os.path.join(directorio_base, 'result', 'pivot.csv')
+	with open( filename, 'wb') as csvfile:
+		spamwriter = csv.writer(csvfile, delimiter=';',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+		dataset = ['valor', 's3', 's2', 's1', 'pp', 'r1', 'r2', 'r3']			
+		spamwriter.writerow(dataset)
+						
+		for v in resultados:
+			valor,datos = v
+			s3, s2, s1, pp, r1, r2, r3 = datos
+			dataset = [valor, s3, s2, s1, pp, r1, r2, r3]
+			spamwriter.writerow(dataset)
+				
+
+
+
+def calculoSoportesResistencias(grafico=None):
+	
+	configuracion = 'configuracion.cfg'
+	# LECTURA DE VALORES DE CONFIGURACION
+	config = ConfigParser.ConfigParser()
+	config.read(configuracion)
+	PROCESAR = config.get('calculo', 'PROCESAR').split(',')
+
+	resultados = []	
+	
+	# SELECCION DE VALORES
+	valores = cargar_valores_from_csv(None)	
+	for row in valores:		
+		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+		if valor in PROCESAR:
+
+			
+			data = cargar_datos_valor(valor, 'D')
+			
+			pivot = fb.calcular_pivot_fibo(data['close'], data['high'], data['low'])
+			
+			resultados.append((valor,pivot[-1]))
+			
+	# ESCRIBIR FICHERO CSV CON RESULTADOS
+	escribir_csv_resultados_pivot(resultados)
+
+	
+
+
+
+def getMejorMedia(VALOR, PERIODO):
+	
+    config = ConfigParser.ConfigParser()
+    config.read('configuracion.cfg')
+    directorio_base = config.get('data', 'directorio_base')
+	
+    filename = os.path.join(directorio_base, 'result', 'medias.csv')
+    with open(filename, 'rb') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=';')
+        for row in spamreader:
+        	valor,tiempo,funcion,periodo,numero_operaciones,total,largos,cortos = row
+        	if valor==VALOR and tiempo==PERIODO:
+        		return periodo
+               
+               
+               
+
+def print_resultado_mejor_hora(registro):
+	(valor, tipo, tiempo, hora, total_diferencia, media)= registro
+	if tipo=="FX":
+		s = "{:<10} {:>3}  {:>5} {:>5} {: >12.5f} {: >12.5f}"
+	else:
+		s = "{:<10} {:>3}  {:>5} {:>5} {: >12.2f} {: >12.2f}"
+	
+	print (s.format(valor, tipo, tiempo, hora, total_diferencia, media))
+
+def print_cabecera_mejor_hora(valor, PERIODO):
+	print ('-'*79)
+	print ("calculo de {} en periodo de {}".format(valor, PERIODO))
+	print ('-'*79)
+
+
+	
+def calculoMejorHora(grafico=None):
+	
+	configuracion = 'configuracion.cfg'
+	# LECTURA DE VALORES DE CONFIGURACION
+	config = ConfigParser.ConfigParser()
+	config.read(configuracion)
+	PROCESAR, RESOLUCIONES, CSV_RESULTADOS, IMPRIMIR, CABECERA, TIPOS = get_valores_proceso_hora(config)
+
+	resultados = []	
+	horas = ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23']
+
+	# SELECCION DE VALORES
+	valores = cargar_valores_from_csv(TIPOS)	
+	for row in valores:		
+		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+		if valor in PROCESAR:
+			
+			mi_valor = []
+					
+			for PERIODO in RESOLUCIONES:				
+				# POR CADA VALOR Y PERIODO
+				if True:
+					VALOR_PROCESAR = valor							
+					if CABECERA and IMPRIMIR: print_cabecera_mejor_hora(VALOR_PROCESAR, PERIODO)
+					
+					# CARGA DE VALORES
+					data = cargar_datos_valor(VALOR_PROCESAR, PERIODO)
+						
+					# TRATMIENTO DE LOS VALORES RECIBIDOS
+					resultado_valor = fb.procesar_valores_hora(VALOR_PROCESAR, PERIODO, tipo, get_datos(data,500), config)					
+					
+					for hora in horas:
+						total_diferencia = 0
+						total_valores = 0
+						
+						for par in resultado_valor[hora]:
+							diferencia = par[0] - par[1]								
+							total_valores += 1
+							total_diferencia += diferencia
+						
+						try:
+							# print_resultado((valor, tipo, PERIODO, hora, total_diferencia, total_diferencia/total_valores))
+							mi_valor.append([valor, tipo, PERIODO, hora, total_diferencia, total_diferencia/total_valores])
+						except:
+							# print_resultado((valor, tipo, PERIODO, hora, total_diferencia, 0))
+							mi_valor.append([valor, tipo, PERIODO, hora, total_diferencia, 0])
+
+			if grafico:
+				fg.graficarMejorHora(mi_valor)
+
+			mi_valor.sort(key=lambda (a,b,c,d,e,f):(f), reverse=True)
+			for m in mi_valor:
+				(valor, tipo, PERIODO, hora, total_diferencia, media) = m
+				print_resultado_mejor_hora(m)
+		
+			resultados.append(mi_valor)
+			
+		# ESCRIBIR FICHERO CSV CON RESULTADOS
+	if CSV_RESULTADOS=='si': escribir_csv_resultados_hora(resultados)
+	
+
+
+def escribir_csv_resultados_hora(resultados):
+	
+	config = ConfigParser.ConfigParser()
+	config.read('configuracion.cfg')
+	directorio_base = config.get('data', 'directorio_base')
+
+	directorio_destino =  os.path.join(directorio_base,'result')
+	if not os.path.exists(directorio_destino):
+		os.makedirs(directorio_destino)
+		print ("creando directorio.... {}".format(directorio_destino))
+	
+	
+	filename = os.path.join(directorio_base, 'result', 'horas.csv')
+	with open( filename, 'wb') as csvfile:
+		spamwriter = csv.writer(csvfile, delimiter=';',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+		dataset = ['valor', 'tipo', 'periodo', 'hora', 'pip', 'media']			
+		spamwriter.writerow(dataset)
+						
+		for v in resultados:
+			for r in v:
+				valor, tipo, periodo, hora, pip, media = r
+				dataset = [valor, tipo, periodo, hora, pip, media]
+				spamwriter.writerow(dataset)
+				
+				
+				
+def print_resultado(registro):
+	valor, tiempo, tipo, titulo,  periodo, numero_operaciones, total, largos, cortos = registro
+	s = "{:<10} {:>3}  {:<15} {:>2} {:>4} {: >4} {: >12.2f} {: >12.2f} {: >12.2f}"
+	print (s.format(valor, tipo, titulo, tiempo, periodo, numero_operaciones, total, largos, cortos))
+
+def print_cabecera(valor, PERIODO):
+	print ('-'*79)
+	print ("calculo de {} en periodo de {}".format(valor, PERIODO))
+	print ('-'*79)
+
+
+def calculoMejorValor():
+	
+	configuracion = 'configuracion.cfg'
+	# LECTURA DE VALORES DE CONFIGURACION
+	config = ConfigParser.ConfigParser()
+	config.read(configuracion)
+	PROCESAR, RESOLUCIONES, CSV_RESULTADOS, IMPRIMIR, CABECERA, TIPOS = get_valores_proceso(config)
+
+	resultados = []	
+
+	# SELECCION DE VALORES
+	
+	valores = cargar_valores_from_csv(TIPOS)	
+	for row in valores:
+		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+		if valor in PROCESAR or PROCESAR[0] == "ALL":		
+			for PERIODO in RESOLUCIONES:
+				
+				# POR CADA VALOR Y PERIODO
+				try:
+					VALOR_PROCESAR = valor							
+					if CABECERA and IMPRIMIR: print_cabecera(VALOR_PROCESAR, PERIODO)
+					
+					# CARGA DE VALORES
+					data = cargar_datos_valor(VALOR_PROCESAR, PERIODO)
+						
+					# TRATMIENTO DE LOS VALORES RECIBIDOS
+					resultado_valor = fb.procesar_valores(VALOR_PROCESAR, PERIODO, tipo, get_datos(data,500), config)					
+					resultado_valor.sort(key=lambda (a,b,c,d,e,f,g,h,i):(g,h), reverse=True)
+					resultados.append(resultado_valor[0])
+					
+					# IMPRIMIMOS RESULTADOS
+					if IMPRIMIR: 
+						for r in resultado_valor: print_resultado(r)
+					
+						
+				except Exception as e:
+					print ("Error {} {} {}".format(VALOR_PROCESAR, PERIODO, e))
+					
+	
+	
+	# ESCRIBIR FICHERO CSV CON RESULTADOS
+	if CSV_RESULTADOS=='si': escribir_csv_resultados(resultados)	
+	
+	
+	
+def procesar_valor(VALOR,CODIGO,RESOLUCION,DIRECTORIO_BASE):
+	
+	fname = VALOR 
+	print ("procesando valor {:<10} Resolucion {:>3}".format(fname, RESOLUCION))
+	
+	data = get_json_file(fname, RESOLUCION)
+	
+	cierre,apertura,high,low = set_arrays_from_json_data(data)
+	if cierre == None: 
+		print ("error al procesar ", fname)
+		return 
+	
+	lecturas = len(cierre)	
+	fecha = fb.get_fechas(data)
+	
+	
+	
+	file_path = os.path.join(DIRECTORIO_BASE, 'csv', RESOLUCION, fname + '.csv')	
+	
+	if os.path.exists(file_path):
+		print ('existe {}'.format(file_path))
+		data = cargar_valores(VALOR,RESOLUCION)
+		datetime_json = datetime.strptime(fecha[-1], "%Y-%m-%d %H:%M")
+		datetime_file = datetime.strptime(data['fecha'][-1], "%Y-%m-%d %H:%M")
+		# nada que hacer, las fechas no son superiores
+		if datetime_json <= datetime_file:
+			cierre_json = cierre[-1]
+			cierre_file = data['close'][-1]	
+			if cierre_json == cierre_file:
+				print ('saliendo sin cambios, nada que anexar')
+				# print ('\t\t', cierre_file, cierre_json)
+				return
+	
+	# print (len(fecha), len(cierre),len(apertura),len(high),len(low))
+	
+	
+	macd, macd_signal, macd_histograma = fb.get_macd(cierre,12,26,9)
+	
+	rsi14 = fb.calcular_rsi(14, cierre)
+	rsi50 = fb.calcular_rsi(50, cierre)
+	
+	estocastico_sk_14, estocastico_sd_14 = fb.calcular_estocastico(cierre, high, low, 14, 3)
+	estocastico_sk_50, estocastico_sd_50 = fb.calcular_estocastico(cierre, high, low, 14, 3)	
+		
+	# sma = [0]*201
+	# ema = [0]*201
+	
+	#calcula emas de 5 a 200
+	sma5 = fb.get_sma_periodo(5,cierre)
+	ema5 = fb.get_ema_periodo(5,cierre)
+
+	sma20 = fb.get_sma_periodo(20,cierre)
+	ema20 = fb.get_ema_periodo(20,cierre)
+	
+	sma200 = fb.get_sma_periodo(200,cierre)
+	ema200 = fb.get_ema_periodo(200,cierre)
+
+	sma100 = fb.get_sma_periodo(100,cierre)
+	ema100 = fb.get_ema_periodo(100,cierre)
+
+	sma50 = fb.get_sma_periodo(50,cierre)
+	ema50 = fb.get_ema_periodo(50,cierre)
+	
+	sma400 = fb.get_sma_periodo(400,cierre)
+	ema400 = fb.get_ema_periodo(400,cierre)
+	
+	
+	
+	# print ('desde {} hasta {}'.format(fecha[0], fecha[-1]))
+	
+	directorio_destino =  os.path.join(DIRECTORIO_BASE, 'csv', RESOLUCION)	
+	if not os.path.exists(directorio_destino):
+		os.makedirs(directorio_destino)
+		print ("creando directorio.... {}".format(directorio_destino))
+	
+	
+	
+	file_path = os.path.join(DIRECTORIO_BASE, 'csv', RESOLUCION, fname + '.csv')	
+	if os.path.exists(file_path):		
+		data = cargar_valores(VALOR,RESOLUCION)
+		
+		datetime_json = datetime.strptime(fecha[-1], "%Y-%m-%d %H:%M")
+		datetime_file = datetime.strptime(data['fecha'][-1], "%Y-%m-%d %H:%M")
+			
+		print ("anexando desde {}".format(data['fecha'][-1]))
+		# print ('append fechas nuevas desde {} hasta {}'.format(data['fecha'][-1], fecha[-1] ))
+	
+		# aqui tenemos que modificar el ultimo valor en caso de que haya variacion
+		# puedo cargar los valores a cargar en dataset y luego a�adirlos al fichero csv
+		# y luego recorrer el fichero y eliminar el penultimo valor
+		
+		with open( file_path, 'ab') as csvfile:
+			spamwriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+			# dataset = ['fecha','apertura','cierre','high','low','macd','macd_signal','macd_histograma','rsi14','rsi50','esk14','esd14','esk50', 'esd50','sma[5]','ema[5]','sma[20]','ema[20]','sma[50]','ema[50]','sma[100]','ema[100]','sma[200]','ema[200]','sma[400]','ema[400]']			
+			# spamwriter.writerow(dataset)
+				
+			for x in range(0, len(fecha)):
+				datetime_json = datetime.strptime(fecha[x], "%Y-%m-%d %H:%M")
+				if datetime_json > datetime_file: # if datetime_json >= datetime_file: anade fila nueva	repitiendo		
+					dataset = [fecha[x],apertura[x],cierre[x],high[x],low[x],macd[x],macd_signal[x],macd_histograma[x],rsi14[x],rsi50[x],estocastico_sk_14[x],estocastico_sd_14[x],estocastico_sk_50[x], estocastico_sd_50[x], sma5[x], ema5[x], sma20[x], ema20[x], sma50[x], ema50[x], sma100[x], ema100[x], sma200[x], ema200[x], sma400[x], ema400[x]]			
+					spamwriter.writerow(dataset)
+					# print ("\t\t Anadiendo {}".format(datetime_json))
+				# else:
+					# print ("\t\t Saliendo en {}".format(datetime_file))
+		
+	else:
+		print ('nuevo {}'.format(file_path))
+		with open( file_path, 'wb') as csvfile:
+			spamwriter = csv.writer(csvfile, delimiter=';',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+			dataset = ['fecha','apertura','cierre','high','low','macd','macd_signal','macd_histograma','rsi14','rsi50','esk14','esd14','esk50', 'esd50','sma[5]','ema[5]','sma[20]','ema[20]','sma[50]','ema[50]','sma[100]','ema[100]','sma[200]','ema[200]','sma[400]','ema[400]']			
+			spamwriter.writerow(dataset)
+				
+			for x in range(0,lecturas):
+				dataset = [fecha[x],apertura[x],cierre[x],high[x],low[x],macd[x],macd_signal[x],macd_histograma[x],rsi14[x],rsi50[x],estocastico_sk_14[x],estocastico_sd_14[x],estocastico_sk_50[x], estocastico_sd_50[x], sma5[x], ema5[x], sma20[x], ema20[x], sma50[x], ema50[x], sma100[x], ema100[x], sma200[x], ema200[x], sma400[x], ema400[x]]			
+				spamwriter.writerow(dataset)
+
+
+
+
+def prepararDatos():
+	configuracion = 'configuracion.cfg'
+	# LECTURA DE VALORES DE CONFIGURACION
+	config = ConfigParser.ConfigParser()
+	config.read(configuracion)
+	directorio_base = config.get('data', 'directorio_base')
+	TIPOS = config.get('descargar', 'TIPOS').split(',')
+	RESOLUCIONES = config.get('descargar', 'RESOLUCIONES').split(',')
+	PROCESAR = config.get('descargar', 'PROCESAR').split(',')
+	
+	
+	valores = cargar_valores_from_csv(None)
+	for row in valores:
+		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+		if valor in PROCESAR: 
+			for RESOLUCION in RESOLUCIONES:
+				try:
+					procesar_valor(valor,codigo,RESOLUCION,directorio_base)
+				except:
+					print ("error al procesar {}".format(valor))
+					
+def descargarDatos():
+
+	TIEMPO = 365 * 10
+	FILENAME = 'valores.csv'
+	configuracion = 'configuracion.cfg'
+	
+	# LECTURA DE VALORES DE CONFIGURACION
+	config = ConfigParser.ConfigParser()
+	config.read(configuracion)
+	directorio_base = config.get('data', 'directorio_base')
+	TIPOS = config.get('descargar', 'TIPOS').split(',')
+	RESOLUCIONES = config.get('descargar', 'RESOLUCIONES').split(',')
+	PROCESAR = config.get('descargar', 'PROCESAR').split(',')
+	
+	valores = cargar_valores_from_csv(TIPOS)
+	for row in valores:
+		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+		if valor in PROCESAR:
+			for resolucion in RESOLUCIONES:
+				uri = create_url(codigo,resolucion,TIEMPO)
+				print ("descargando valor {: >10}({: >10}) Resolucion {: >5}".format(valor, codigo, resolucion))
+
+				data = get_json(uri)
+				
+				filename = valor + '.json'
+				directorio_destino =  os.path.join(directorio_base,'data',resolucion)
+				if not os.path.exists(directorio_destino):
+					os.makedirs(directorio_destino)
+					print ("creando directorio.... {}".format(directorio_destino))
+				
+				fname = os.path.join(directorio_destino,filename)
+				print ("guardando archivo {}".format(fname))
+				f = open(fname,'w')
+				f.write(data)
+				f.close()
+				
 
 def escribir_csv_resultados(resultados):
 	
@@ -22,7 +439,7 @@ def escribir_csv_resultados(resultados):
 		print ("creando directorio.... {}".format(directorio_destino))
 	
 	
-	filename = os.path.join(directorio_base, 'result', ahora + '.csv')
+	filename = os.path.join(directorio_base, 'result', 'medias.csv')
 	with open( filename, 'wb') as csvfile:
 		spamwriter = csv.writer(csvfile, delimiter=';',quotechar='|', quoting=csv.QUOTE_MINIMAL)
 		dataset = ['valor', 'tiempo', 'funcion', 'periodo', 'numero_operaciones', 'total', 'largos', 'cortos']			

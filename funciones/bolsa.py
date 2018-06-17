@@ -376,7 +376,7 @@ def ema_simple(data, dias_ema = None):
 	emas = {}
 	for i in range(0,lecturas):
 		emas[i] = 0
-		
+	
 	for i in range(dias_ema,lecturas):
 		ema = calcular_ema_simple(data, i, dias_ema)
 		emas[i] = ema
