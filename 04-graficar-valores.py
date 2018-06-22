@@ -18,10 +18,10 @@ if __name__ == '__main__':
     config.read(configuracion)
     directorio_base = config.get('data', 'directorio_base')
     PROCESAR = config.get('calculo', 'PROCESAR').split(',')
-    '''for valor in PROCESAR:
-        # fg.graficarValor(valor,'D', media='mejor')
+    for valor in PROCESAR:
+        fg.graficarValor(valor,'D', media='mejor')
         fg.graficarValor(valor,'60', media='mejor')
-        fg.graficarValor(valor,'W', media='mejor')'''
+        fg.graficarValor(valor,'W', media='mejor')
             
     C = itertools.permutations(PROCESAR, 2)
     

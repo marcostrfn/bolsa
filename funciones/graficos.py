@@ -19,6 +19,7 @@ import ConfigParser
 
 import bolsa as fb
 import data as fd
+from matplotlib import _mathtext_data
 
 
 
@@ -183,6 +184,57 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
 
 
 
+def graficoSimple(valor,tituloX,tituloY,data,tipo="linea"):
+
+    
+    
+    x = np.arange(0,len(data))
+    plt.axes()  # Definimos la posicion de los ejes
+    if tipo=='linea':
+        plt.plot(x,data)  # Dibujamos el grafico de barras
+    elif tipo=='barra':
+        plt.bar(x,data)
+    
+    plt.title(tituloX, fontsize=10)
+    # plt.xticks(horas, rotation = 45)  # Colocamos las etiquetas del eje x, en este caso, las fechas
+    plt.ylabel(tituloY)
+    plt.show()
+    plt.close()
+    
+    
+    
+def graficarHorasMaxMin(valor,data,titulo,fechas):
+    
+    horas = ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23']
+    configuracion = 'configuracion.cfg'
+    # LECTURA DE VALORES DE CONFIGURACION
+    config = ConfigParser.ConfigParser()
+    config.read(configuracion)
+    DIRECTORIO_BASE = config.get('data', 'directorio_base')
+            
+
+    plt.axes()  # Definimos la posicion de los ejes
+    plt.bar(horas, data)  # Dibujamos el grafico de barras
+    plt.title("{}\n{}".format(valor,fechas), fontsize=10)
+    plt.xticks(horas, rotation = 45)  # Colocamos las etiquetas del eje x, en este caso, las fechas
+    plt.ylabel(titulo)
+
+    
+    
+    directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'max_min')    
+    if not os.path.exists(directorio_destino):
+        os.makedirs(directorio_destino)
+        print ("creando directorio.... {}".format(directorio_destino))
+        
+    filenameResult =os.path.join(DIRECTORIO_BASE, 'graficos', 'max_min', "{}_{}.png".format(valor,titulo))
+    print("generando grafico horas... {}".format(filenameResult)) 
+    plt.savefig(filenameResult)   # save the figure to file    
+    # plt.show()
+    plt.close()
+
+    
+    
+    
 
 def graficarMejorHora(data):
     
@@ -215,9 +267,6 @@ def graficarMejorHora(data):
     print("generando grafico horas... {}".format(filenameResult)) 
     plt.savefig(filenameResult)   # save the figure to file
     plt.close()
-
-    
-    plt.show()
 
     
     

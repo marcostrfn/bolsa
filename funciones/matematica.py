@@ -3,6 +3,12 @@
 
 import math
 
+
+def calcularPorcentaje(lista):
+    porcentajes = [((b-a)*100/a) for a,b in zip(lista,lista[1:])]
+    return porcentajes
+   
+   
 def desviacion_estandar(datax):
 	
 	return math.sqrt(varianza(datax))

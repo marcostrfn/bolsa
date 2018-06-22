@@ -1,4 +1,6 @@
 
+
+
 import funciones.graficos as fg
 import itertools
 import ConfigParser
