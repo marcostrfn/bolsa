@@ -1,15 +1,24 @@
+#! /usr/bin/env/python
+# -*- coding: utf-8 -*-
+
 
 import funciones.data as fd
 import funciones.graficos as fg
 import ConfigParser
 import sys
 
-def calculoVelas():
+
+# 02_calculo_mejor_valor
+# 03_calculo_Soportes_Resistencias
+# 04_graficar-valores-medias
+# 04_graficar-valores
+# 07_graficar_maximos_minimos
+# 08_graficar-valores-medias
+# [calculo]
+
+
+if __name__ == '__main__':  
     
-
-
-
-
     configuracion = 'configuracion.cfg'
     # LECTURA DE VALORES DE CONFIGURACION
     config = ConfigParser.ConfigParser()
@@ -125,7 +134,4 @@ def calculoVelas():
             fechas = "de {} a {}".format(fechaDesde,fechaHasta)
             fg.graficarHorasMaxMin(valor, horasMaximo,'maximos',fechas)
             fg.graficarHorasMaxMin(valor ,horasMinimo,'minimos',fechas)
-    
-    
-calculoVelas() 
     

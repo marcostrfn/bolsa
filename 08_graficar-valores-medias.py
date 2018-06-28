@@ -1,3 +1,6 @@
+#! /usr/bin/env/python
+# -*- coding: utf-8 -*-
+
 
 import funciones.graficos as fg
 import itertools
@@ -7,6 +10,13 @@ import sys
 
 
 
+# 02_calculo_mejor_valor
+# 03_calculo_Soportes_Resistencias
+# 04_graficar-valores-medias
+# 04_graficar-valores
+# 07_graficar_maximos_minimos
+# 08_graficar-valores-medias
+# [calculo]
 
 if __name__ == '__main__':   
     

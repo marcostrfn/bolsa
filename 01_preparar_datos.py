@@ -10,7 +10,9 @@ import funciones.data as fd
 import ConfigParser
 
 
-
+# 00_descargar_datos
+# 01_preparar_datos
+# [descargar]
 if __name__ == '__main__':
 	fd.prepararDatos()
 	

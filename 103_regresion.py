@@ -1,3 +1,6 @@
+#! /usr/bin/env/python
+# -*- coding: utf-8 -*-
+
 
 import os
 import sys
@@ -5,9 +8,6 @@ import csv
 import pandas as pd
 import ConfigParser
 import datetime
-
-
-# Implementacion del metodo del gradiente con pandas
 
 import pandas as pd
 import numpy as np
@@ -124,8 +124,8 @@ def procesa(DIR_BASE, HORA_COMPARAR, HORA_DESTINO, PROCESAR, filename):
     test_graph(DIR_BASE, filename, PROCESAR, HORA_COMPARAR, HORA_DESTINO)
 
 
-def main():
-    
+if __name__ == '__main__':
+        
     PROCESAR = 'DE30'
     HORA_INICIO = 8
     HORA_DESTINO = 17
@@ -142,5 +142,3 @@ def main():
         procesa(DIR_BASE, HORA_COMPARA, HORA_DESTINO, PROCESAR, filename)
         
                           
-if __name__ == '__main__':
-    main()

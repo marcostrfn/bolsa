@@ -1,11 +1,14 @@
+#! /usr/bin/env/python
+# -*- coding: utf-8 -*-
 
-import funciones.graficos as fg
+
 import itertools
 import ConfigParser
 import sys
 
 import funciones.data as fd
 import funciones.bolsa as fb
+import funciones.graficos as fg
 
 import matplotlib.pyplot as plt
 from pylab import *

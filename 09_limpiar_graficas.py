@@ -1,15 +1,9 @@
+#! /usr/bin/env/python
+# -*- coding: utf-8 -*-
 
 
 import funciones.graficos as fg
-
-
-
-
-                
-                
-def main():
+       
+if __name__ == '__main__':  
     fg.limpiarGraficas()
 
-
-if __name__ == "__main__": main()
-                

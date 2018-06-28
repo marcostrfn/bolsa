@@ -1,7 +1,7 @@
-from __future__ import print_function
-
 #! /usr/bin/env/python
 # -*- coding: utf-8 -*-
+
+from __future__ import print_function
 
 import numpy as np
 from scipy import stats # importando scipy.stats

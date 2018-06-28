@@ -1,3 +1,6 @@
+#! /usr/bin/env/python
+# -*- coding: utf-8 -*-
+
 
 import funciones.data as fd
 import funciones.graficos as fg

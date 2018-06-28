@@ -1,4 +1,5 @@
-
+#! /usr/bin/env/python
+# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -107,13 +108,13 @@ config = ConfigParser.ConfigParser()
 config.read(configuracion)
 DIR_BASE = config.get('data', 'directorio_base')
     
-def main():
+if __name__ == '__main__':
     
     PROCESAR = 'DE30'        
 
     filename = os.path.join(DIR_BASE,'csv','60','{}.csv'.format(PROCESAR))
     
-    HORAS = [(8,8,21),(8,9,21),(8,10,21),(8,12,21),
+    HORAS = [(8,8,21),(8,9,21),(8,10,21),(8,12,21),(8,16,21),
              (9,9,21),(9,10,21),(9,12,21),
              (8,8,16),(8,9,16),(8,10,16),(8,12,16),
              (9,9,16),(9,10,16),(9,12,16),
@@ -122,11 +123,6 @@ def main():
              (17,17,21)]
     
     for horas in HORAS:
-        (hora_inicio,hora_final,hora_destino) = horas
-    
-#    for HORA_COMPARA in range(HORA_INICIO, HORA_DESTINO):        
+        (hora_inicio,hora_final,hora_destino) = horas     
         procesa(DIR_BASE, hora_inicio, hora_final, hora_destino, PROCESAR, filename)        
         
-                          
-if __name__ == '__main__':
-    main()
