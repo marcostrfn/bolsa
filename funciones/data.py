@@ -64,10 +64,7 @@ def calculoSoportesResistencias(grafico=None):
 			
 	# ESCRIBIR FICHERO CSV CON RESULTADOS
 	escribir_csv_resultados_pivot(resultados)
-
-	
-
-
+             
 
 def getMejorMedia(VALOR, PERIODO):
 	

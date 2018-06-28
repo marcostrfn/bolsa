@@ -92,8 +92,8 @@ def crea_report(fname, front_cover, back_cover, path, path2, path3, path4, media
         pictures_mh.append(os.path.join(path_valores_horas,file))
     
     
-    Story.append(Image(front_cover, width, height))
-    Story.append(PageBreak())
+    # Story.append(Image(front_cover, width, height))
+    # Story.append(PageBreak())
     
     for el in elements_medias:
         Story.append(el)

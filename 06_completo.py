@@ -25,19 +25,29 @@ if __name__ == '__main__':
     tiempos = []
     start1 = time.time()
 
-    start = time.time()
-    fd.descargarDatos()
-    done = time.time()
-    elapsed = done - start
-    print("tiempo fd.descargarDatos() {}".format(elapsed))
-    tiempos.append(('descargarDatos',elapsed))
+#     start = time.time()
+#     fd.descargarDatos()
+#     done = time.time()
+#     elapsed = done - start
+#     print("tiempo fd.descargarDatos() {}".format(elapsed))
+#     tiempos.append(('descargarDatos',elapsed))
+# 
+#     start = time.time()
+#     fd.prepararDatos()
+#     done = time.time()
+#     elapsed = done - start
+#     print("tiempo fd.prepararDatos() {}".format(elapsed))
+#     tiempos.append(('prepararDatos',elapsed))
+
 
     start = time.time()
-    fd.prepararDatos()
+    fg.limpiarGraficas()
     done = time.time()
     elapsed = done - start
-    print("tiempo fd.prepararDatos() {}".format(elapsed))
-    tiempos.append(('prepararDatos',elapsed))
+    print("tiempo fd.limpiarGraficas() {}".format(elapsed))
+    tiempos.append(('limpiarGraficas',elapsed))
+
+
 
     start = time.time()
     fd.calculoMejorValor()

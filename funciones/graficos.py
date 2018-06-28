@@ -1,6 +1,10 @@
 
 from __future__ import print_function
-import os, csv, sys
+import csv
+import sys
+import os
+import shutil
+import ConfigParser
 
 import matplotlib.pyplot as plt
 from pylab import *
@@ -15,13 +19,67 @@ from mpl_finance import plot_day_summary_oclh
 import dateutil.relativedelta
 from datetime import datetime, timedelta
 
-import ConfigParser
 
 import bolsa as fb
 import data as fd
 from matplotlib import _mathtext_data
 
 
+
+
+
+def limpiarGraficas():
+    
+    carpeta_backup = 'graficos'
+    exclude_carpeta = ['reporte']
+    
+    config = ConfigParser.ConfigParser()
+    config.read('configuracion.cfg')
+    directorio_base = config.get('data', 'directorio_base')
+    
+    directorio_destino = os.path.join(directorio_base, 'backup')
+    if not os.path.exists(directorio_destino):
+        os.makedirs(directorio_destino)
+        print ("creando directorio.... {}".format(directorio_destino))
+        
+    directorio_destino = os.path.join(directorio_base, 'backup', carpeta_backup)
+    if not os.path.exists(directorio_destino):
+        os.makedirs(directorio_destino)
+        print ("creando directorio.... {}".format(directorio_destino))
+    
+    now = datetime.now()
+    ahora = now.strftime("%Y%m%d_%H%M")
+
+    base_path = os.path.join(directorio_base, carpeta_backup)
+    for (path, directorios, archivos) in os.walk(base_path):   
+            for excluir in exclude_carpeta:
+                if excluir in path: continue
+                 
+            if not len(archivos) > 0: continue            
+            
+            for archivo in archivos:
+                # directorio_destino =  os.path.join(directorio_base,'backup',carpeta_backup)
+                
+                directorios = path.split(base_path)
+                directorios = directorios[1].split(os.sep)
+                
+                directorio_raiz = os.path.join(directorio_base, 'backup', carpeta_backup)
+                for directorio in directorios:
+                    directorio_destino = os.path.join(directorio_raiz, directorio)
+                    if not os.path.exists(directorio_destino):
+                        os.makedirs(directorio_destino)
+                        print ("creando directorio.... {}".format(directorio_destino))                    
+                    directorio_raiz = os.path.join(directorio_raiz, directorio)
+                
+                file_source = os.path.join(path, archivo)
+                
+                directorio_destino = os.path.join(directorio_raiz, ahora)
+                if not os.path.exists(directorio_destino):
+                    os.makedirs(directorio_destino)
+                    print ("creando directorio.... {}".format(directorio_destino))
+                
+                file_dest = os.path.join(directorio_raiz, ahora, archivo)
+                shutil.move(file_source, file_dest)
 
 def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
 
