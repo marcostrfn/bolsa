@@ -1,4 +1,5 @@
-
+#! /usr/bin/env/python
+# -*- coding: utf-8 -*-
 
 from datetime import datetime, timedelta, date
 import estrategia as fe
