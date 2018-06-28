@@ -397,6 +397,10 @@ def crearDocumento(medias,horas,pivot):
 
 
 def crearReporte():
+    ''' crea un reporte con los graficos de pares, valores
+    pivot y mejores horas de trading.
+    resultado en pdf en /graficos/valores/reporte'''
+    
     medias = leer_mejores_medias()
     horas = leer_mejores_horas()
     pivot = leer_pivot_point()

@@ -7,18 +7,11 @@ import itertools
 import ConfigParser
 import sys
 
-
-
-
-# 02_calculo_mejor_valor
-# 03_calculo_Soportes_Resistencias
-# 04_graficar-valores-medias
-# 04_graficar-valores
-# 07_graficar_maximos_minimos
-# 08_graficar-valores-medias
-# [calculo]
-
-if __name__ == '__main__':       
+if __name__ == '__main__':      
+    ''' graficos de las mejores medias de trading.
+    resultado en /graficos/medias
+    lee los valores de fichero de configuracion con tag calculo'''
+     
     configuracion = 'configuracion.cfg'
     config = ConfigParser.ConfigParser()
     config.read(configuracion)

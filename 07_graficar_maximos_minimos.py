@@ -18,6 +18,9 @@ import sys
 
 
 if __name__ == '__main__':  
+    ''' grafica las horas donde se dan los maximos y minimos de un valor 
+    resultado en graficos/max-min
+    lee los valores a procesar de configuracion calculo '''
     
     configuracion = 'configuracion.cfg'
     # LECTURA DE VALORES DE CONFIGURACION
@@ -27,8 +30,6 @@ if __name__ == '__main__':
 
     resultados = []    
 
-    
-    # SELECCION DE VALORES
     valores = fd.cargar_valores_from_csv(None)    
     for row in valores:     
         valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
@@ -48,17 +49,12 @@ if __name__ == '__main__':
             
             maximoHigh = 0
             maximoLow = 100000
-            
-            
             valoresDiarios = []
             for i in range (1,len(data['fecha'])):
                 
                 fecha = data['fecha'][i].split(' ')
                 dia = fecha[0]
                 hora = fecha[1].split(':')
-                
-                
-                
                 
                 if hora[0] in ['23','00','01','02','03','04','05','06','07']: continue
                 
@@ -70,13 +66,9 @@ if __name__ == '__main__':
                     
                     if high > maximoHigh: maximoHigh = high
                     if low < maximoLow: maximoLow = low
-                    
-                    # print (dia, hora[0], maximoHigh, maximoLow, high, low)
                     valoresDiarios.append((dia, hora[0], maximoHigh, maximoLow))  
 
                 else:
-                    
-                    # print ('a', diaOld, maximoHigh, maximoLow)
                     
                     maximoDia = 0
                     minimoDia = 100000
@@ -94,25 +86,15 @@ if __name__ == '__main__':
                             minimoDia = dMaximoLow
                             horaDiaMinimo = dHora
                             diaDiaMinimo = dDia
-                    
-                    # print ('----------------------------------------------')
-                    # print (diaDiaMaximo, horaDiaMaximo, dMaximoHigh )
-                    # print (diaDiaMinimo, horaDiaMinimo, dMaximoLow )
-                    # print ('----------------------------------------------')
+
                     try:
                         horasMaximo[int(horaDiaMaximo)] += 1
                         horasMinimo[int(horaDiaMinimo)] += 1
                     except Exception:
                         print (Exception)
                         
-                    
-                    
-                    
-                    
-                        
                     valoresDiarios = []
-                    
-                    
+                             
                     maximoHigh = 0
                     maximoLow = 100000
                     diaOld = dia
@@ -125,12 +107,9 @@ if __name__ == '__main__':
                     if high > maximoHigh: maximoHigh = high
                     if low < maximoLow: maximoLow = low
                     
-                    # print (dia, hora[0], maximoHigh, maximoLow, high, low)
                     valoresDiarios.append((dia, hora[0], maximoHigh, maximoLow)) 
                     fechaHasta = dia
                     
-                        
-    
             fechas = "de {} a {}".format(fechaDesde,fechaHasta)
             fg.graficarHorasMaxMin(valor, horasMaximo,'maximos',fechas)
             fg.graficarHorasMaxMin(valor ,horasMinimo,'minimos',fechas)

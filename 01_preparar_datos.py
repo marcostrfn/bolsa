@@ -9,11 +9,11 @@ from datetime import datetime
 import funciones.data as fd
 import ConfigParser
 
-
-# 00_descargar_datos
-# 01_preparar_datos
-# [descargar]
 if __name__ == '__main__':
+	''' lee un fichero json con valores y prepara un csv con datos para uso posterior
+	(macd, rsi, estocastico, medias, etc. Deja el fichero en data/csv/xx/xx.csvç
+	lee los valores desde fichero de configuracion, opcion descargar'''
+	
 	fd.prepararDatos()
 	
 	

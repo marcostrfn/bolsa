@@ -19,6 +19,11 @@ import sys
 # [calculo]
 
 if __name__ == '__main__':   
+    ''' graficos de las valores y resultado en /graficos/valores
+    lee los valores de fichero de configuracion con tag calculo
+    combina pares de valores y deja el resultado en /csv/pares/
+    graficos de correlacion en /graficos/pares
+    lee los valores de configuracion tag calculo '''
     
     configuracion = 'configuracion.cfg'
     

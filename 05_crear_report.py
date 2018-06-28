@@ -16,4 +16,8 @@ from funciones import reporting as fr
 # path4 = r"C:\tmp\bolsa\graficos\horas"
     
 if __name__ == '__main__':
+    ''' crea un reporte con los graficos de pares, valores
+    pivot y mejores horas de trading.
+    resultado en pdf en /graficos/valores/reporte'''
+    
     fr.crearReporte()

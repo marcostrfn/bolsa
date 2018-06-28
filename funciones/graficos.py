@@ -31,6 +31,8 @@ from matplotlib import _mathtext_data
 
 
 def limpiarGraficas():
+    ''' limpia graficos de la carpeta /graficos/ y deja backup en
+    carpeta backup'''
     
     carpeta_backup = 'graficos'
     exclude_carpeta = ['reporte']
@@ -83,18 +85,21 @@ def limpiarGraficas():
                 file_dest = os.path.join(directorio_raiz, ahora, archivo)
                 shutil.move(file_source, file_dest)
 
-def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
 
+
+
+def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
+    ''' graficos de las mejores medias de trading.
+    resultado en /graficos/medias
+    lee los valores de fichero de configuracion con tag calculo'''
+    
     configuracion = 'configuracion.cfg'
     # LECTURA DE VALORES DE CONFIGURACION
     config = ConfigParser.ConfigParser()
     config.read(configuracion)
     DIRECTORIO_BASE = config.get('data', 'directorio_base')
-    
-    
     filename = os.path.join(DIRECTORIO_BASE,'csv',TEMPORALIDAD,"{}.csv".format(VALOR))
     
-    # every monday
     mondays = MonthLocator()
     daysFmt = DateFormatter("%d %b %y %H:%M")
 
@@ -109,7 +114,6 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
         sma_mejor = fb.get_sma_periodo(int(mejor_media),quotes['cierre'])
         
     quotes['sma_mejor'] = sma_mejor
-    
     
     date2 = datetime.now()
     date1 = date2 - dateutil.relativedelta.relativedelta(months=meses)
@@ -136,7 +140,6 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
     
-    
     cierre = []
     for d in quotes['cierre']:
         cierre.append(d)
@@ -154,19 +157,14 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
     media = []
     for x in range(0,len(cierre)):
         dif_50 = cierre[x] - sma50[x]
-        dif_200 = cierre[x] - sma200[x]
-                      
+        dif_200 = cierre[x] - sma200[x]        
         media_50.append(dif_50)
         media_200.append(dif_200)
-
         media.append(dif_200 - dif_50)  
     
     quotes['dif_media'] = media
     quotes['dif_media_50'] = media_50
     quotes['dif_media_200'] = media_200
-
-
-        
     if media is not None:
         sma_mejor = []
         for d in quotes['sma_mejor']:
@@ -174,22 +172,12 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
         
         media_mejor = []
         for x in range(0,len(cierre)):
-            # dif_50 = abs(cierre[x] - sma50[x])
-            #dif_200 = abs(cierre[x] - sma200[x])
- 
             dif_mejor = cierre[x] - sma_mejor[x]
             media_mejor.append(dif_mejor)    
     
-            
-      
         quotes['media_sma_mejor'] = media_mejor
-        
-    
-    
     
     fig, ax = plt.subplots(figsize=(24, 12))
-
-    
     x = zip(date2num(quotes.index.to_pydatetime()))  
     
     ax1 = plt.subplot2grid((9,1), (0,0), rowspan=3)
@@ -198,7 +186,6 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
 
     plt.title("{}".format(titulo),  fontsize=20)
     plt.grid(True)
-
     
     ax2 = plt.subplot2grid((9,1), (3, 0), rowspan=3) 
     plt.bar(arange(0,len(quotes['dif_media']),1), quotes['dif_media'], label='dorado')
@@ -230,16 +217,13 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
     ax3.autoscale_view()
     ax3.xaxis.grid(True, 'major')
     ax3.grid(True)   
-
-
+    
     fig.autofmt_xdate()
-
 
     filenameResult = directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'medias', TEMPORALIDAD, "{}.png".format(VALOR))
       
     print("generando.... {}".format(filenameResult)) 
-    plt.savefig(filenameResult)   # save the figure to file
-    # plt.show()
+    plt.savefig(filenameResult) 
     plt.close()
 
 
@@ -264,6 +248,9 @@ def graficoSimple(valor,tituloX,tituloY,data,tipo="linea"):
     
     
 def graficarHorasMaxMin(valor,data,titulo,fechas):
+    ''' grafica las horas donde se dan los maximos y minimos de un valor 
+    resultado en graficos/max-min '''
+    
     
     horas = ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23']
     configuracion = 'configuracion.cfg'
@@ -331,6 +318,9 @@ def graficarMejorHora(data):
     
     
 def graficarValor(VALOR, TEMPORALIDAD, tiempo = None, media = None):
+    ''' graficos de las valores
+    resultado en /graficos/valores'''
+    
     if TEMPORALIDAD=='D':
         if tiempo is None:
             tiempo = 10 
@@ -936,7 +926,9 @@ def graficoCorrelacion(VALORES, DIRECTORIO_BASE, TEMPORALIDAD, filename, meses =
     
     
 def combinarValores(VALORES,TEMPORALIDAD, MESES=12):
-
+    ''' combina pares de valores y deja el resultado en /csv/pares/
+    graficos de correlacion en /graficos/pares '''
+    
     configuracion = 'configuracion.cfg'
     # LECTURA DE VALORES DE CONFIGURACION
     config = ConfigParser.ConfigParser()

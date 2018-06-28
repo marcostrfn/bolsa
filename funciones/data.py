@@ -18,20 +18,20 @@ def escribir_csv_resultados_pivot(resultados):
 	config.read('configuracion.cfg')
 	directorio_base = config.get('data', 'directorio_base')
 
-	directorio_destino =  os.path.join(directorio_base,'result')
+	directorio_destino = os.path.join(directorio_base, 'result')
 	if not os.path.exists(directorio_destino):
 		os.makedirs(directorio_destino)
 		print ("creando directorio.... {}".format(directorio_destino))
 	
 	
 	filename = os.path.join(directorio_base, 'result', 'pivot.csv')
-	with open( filename, 'wb') as csvfile:
-		spamwriter = csv.writer(csvfile, delimiter=';',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+	with open(filename, 'wb') as csvfile:
+		spamwriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 		dataset = ['valor', 's3', 's2', 's1', 'pp', 'r1', 'r2', 'r3']			
 		spamwriter.writerow(dataset)
 						
 		for v in resultados:
-			valor,datos = v
+			valor, datos = v
 			s3, s2, s1, pp, r1, r2, r3 = datos
 			dataset = [valor, s3, s2, s1, pp, r1, r2, r3]
 			spamwriter.writerow(dataset)
@@ -40,6 +40,9 @@ def escribir_csv_resultados_pivot(resultados):
 
 
 def calculoSoportesResistencias(grafico=None):
+	''' calcula soportes y resistencias diarias de un valor.
+	deja el resultado en fichero result/pivot.csv
+	Lee los valores de fichero de configuración tag calculo'''
 	
 	configuracion = 'configuracion.cfg'
 	# LECTURA DE VALORES DE CONFIGURACION
@@ -48,23 +51,20 @@ def calculoSoportesResistencias(grafico=None):
 	PROCESAR = config.get('calculo', 'PROCESAR').split(',')
 
 	resultados = []	
-	
 	# SELECCION DE VALORES
 	valores = cargar_valores_from_csv(None)	
 	for row in valores:		
-		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+		valor, lotes, margen, spread, tp_spread, tipo, codigo, nombre, descripcion = row
 		if valor in PROCESAR:
-
-			
 			data = cargar_datos_valor(valor, 'D')
-			
 			pivot = fb.calcular_pivot_fibo(data['close'], data['high'], data['low'])
-			
-			resultados.append((valor,pivot[-1]))
-			
+			resultados.append((valor, pivot[-1]))
+
 	# ESCRIBIR FICHERO CSV CON RESULTADOS
 	escribir_csv_resultados_pivot(resultados)
              
+
+
 
 def getMejorMedia(VALOR, PERIODO):
 	
@@ -76,16 +76,16 @@ def getMejorMedia(VALOR, PERIODO):
     with open(filename, 'rb') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=';')
         for row in spamreader:
-        	valor,tiempo,funcion,periodo,numero_operaciones,total,largos,cortos = row
-        	if valor==VALOR and tiempo==PERIODO:
+        	valor, tiempo, funcion, periodo, numero_operaciones, total, largos, cortos = row
+        	if valor == VALOR and tiempo == PERIODO:
         		return periodo
                
                
                
 
 def print_resultado_mejor_hora(registro):
-	(valor, tipo, tiempo, hora, total_diferencia, media)= registro
-	if tipo=="FX":
+	(valor, tipo, tiempo, hora, total_diferencia, media) = registro
+	if tipo == "FX":
 		s = "{:<10} {:>3}  {:>5} {:>5} {: >12.5f} {: >12.5f}"
 	else:
 		s = "{:<10} {:>3}  {:>5} {:>5} {: >12.2f} {: >12.2f}"
@@ -93,13 +93,17 @@ def print_resultado_mejor_hora(registro):
 	print (s.format(valor, tipo, tiempo, hora, total_diferencia, media))
 
 def print_cabecera_mejor_hora(valor, PERIODO):
-	print ('-'*79)
+	print ('-' * 79)
 	print ("calculo de {} en periodo de {}".format(valor, PERIODO))
-	print ('-'*79)
+	print ('-' * 79)
 
 
 	
 def calculoMejorHora(grafico=None):
+	''' calcula el mejor horario para el trading de un valor.
+	deja el resultado en fichero result/horas.csv
+	Lee los valores de fichero de configuración tag horas
+	Graficos en graficos/horas'''
 	
 	configuracion = 'configuracion.cfg'
 	# LECTURA DE VALORES DE CONFIGURACION
@@ -108,12 +112,12 @@ def calculoMejorHora(grafico=None):
 	PROCESAR, RESOLUCIONES, CSV_RESULTADOS, IMPRIMIR, CABECERA, TIPOS = get_valores_proceso_hora(config)
 
 	resultados = []	
-	horas = ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23']
+	horas = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23']
 
 	# SELECCION DE VALORES
 	valores = cargar_valores_from_csv(TIPOS)	
 	for row in valores:		
-		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+		valor, lotes, margen, spread, tp_spread, tipo, codigo, nombre, descripcion = row
 		if valor in PROCESAR:
 			
 			mi_valor = []
@@ -128,7 +132,7 @@ def calculoMejorHora(grafico=None):
 					data = cargar_datos_valor(VALOR_PROCESAR, PERIODO)
 						
 					# TRATMIENTO DE LOS VALORES RECIBIDOS
-					resultado_valor = fb.procesar_valores_hora(VALOR_PROCESAR, PERIODO, tipo, get_datos(data,500), config)					
+					resultado_valor = fb.procesar_valores_hora(VALOR_PROCESAR, PERIODO, tipo, get_datos(data, 500), config)					
 					
 					for hora in horas:
 						total_diferencia = 0
@@ -141,7 +145,7 @@ def calculoMejorHora(grafico=None):
 						
 						try:
 							# print_resultado((valor, tipo, PERIODO, hora, total_diferencia, total_diferencia/total_valores))
-							mi_valor.append([valor, tipo, PERIODO, hora, total_diferencia, total_diferencia/total_valores])
+							mi_valor.append([valor, tipo, PERIODO, hora, total_diferencia, total_diferencia / total_valores])
 						except:
 							# print_resultado((valor, tipo, PERIODO, hora, total_diferencia, 0))
 							mi_valor.append([valor, tipo, PERIODO, hora, total_diferencia, 0])
@@ -149,7 +153,7 @@ def calculoMejorHora(grafico=None):
 			if grafico:
 				fg.graficarMejorHora(mi_valor)
 
-			mi_valor.sort(key=lambda (a,b,c,d,e,f):(f), reverse=True)
+			mi_valor.sort(key=lambda (a, b, c, d, e, f):(f), reverse=True)
 			for m in mi_valor:
 				(valor, tipo, PERIODO, hora, total_diferencia, media) = m
 				print_resultado_mejor_hora(m)
@@ -157,7 +161,7 @@ def calculoMejorHora(grafico=None):
 			resultados.append(mi_valor)
 			
 		# ESCRIBIR FICHERO CSV CON RESULTADOS
-	if CSV_RESULTADOS=='si': escribir_csv_resultados_hora(resultados)
+	if CSV_RESULTADOS == 'si': escribir_csv_resultados_hora(resultados)
 	
 
 
@@ -167,15 +171,15 @@ def escribir_csv_resultados_hora(resultados):
 	config.read('configuracion.cfg')
 	directorio_base = config.get('data', 'directorio_base')
 
-	directorio_destino =  os.path.join(directorio_base,'result')
+	directorio_destino = os.path.join(directorio_base, 'result')
 	if not os.path.exists(directorio_destino):
 		os.makedirs(directorio_destino)
 		print ("creando directorio.... {}".format(directorio_destino))
 	
 	
 	filename = os.path.join(directorio_base, 'result', 'horas.csv')
-	with open( filename, 'wb') as csvfile:
-		spamwriter = csv.writer(csvfile, delimiter=';',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+	with open(filename, 'wb') as csvfile:
+		spamwriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 		dataset = ['valor', 'tipo', 'periodo', 'hora', 'pip', 'media']			
 		spamwriter.writerow(dataset)
 						
@@ -188,17 +192,21 @@ def escribir_csv_resultados_hora(resultados):
 				
 				
 def print_resultado(registro):
-	valor, tiempo, tipo, titulo,  periodo, numero_operaciones, total, largos, cortos = registro
+	valor, tiempo, tipo, titulo, periodo, numero_operaciones, total, largos, cortos = registro
 	s = "{:<10} {:>3}  {:<15} {:>2} {:>4} {: >4} {: >12.2f} {: >12.2f} {: >12.2f}"
 	print (s.format(valor, tipo, titulo, tiempo, periodo, numero_operaciones, total, largos, cortos))
 
 def print_cabecera(valor, PERIODO):
-	print ('-'*79)
+	print ('-' * 79)
 	print ("calculo de {} en periodo de {}".format(valor, PERIODO))
-	print ('-'*79)
+	print ('-' * 79)
 
 
 def calculoMejorValor():
+	''' calcula la mejor media simple para el trading de un valor.
+	deja el resultado en fichero result/medias.csv
+	Lee los valores de fichero de configuración tag calculo'''
+	
 	
 	configuracion = 'configuracion.cfg'
 	# LECTURA DE VALORES DE CONFIGURACION
@@ -212,7 +220,7 @@ def calculoMejorValor():
 	
 	valores = cargar_valores_from_csv(TIPOS)	
 	for row in valores:
-		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+		valor, lotes, margen, spread, tp_spread, tipo, codigo, nombre, descripcion = row
 		if valor in PROCESAR or PROCESAR[0] == "ALL":		
 			for PERIODO in RESOLUCIONES:
 				
@@ -225,8 +233,8 @@ def calculoMejorValor():
 					data = cargar_datos_valor(VALOR_PROCESAR, PERIODO)
 						
 					# TRATMIENTO DE LOS VALORES RECIBIDOS
-					resultado_valor = fb.procesar_valores(VALOR_PROCESAR, PERIODO, tipo, get_datos(data,500), config)					
-					resultado_valor.sort(key=lambda (a,b,c,d,e,f,g,h,i):(g,h), reverse=True)
+					resultado_valor = fb.procesar_valores(VALOR_PROCESAR, PERIODO, tipo, get_datos(data, 500), config)					
+					resultado_valor.sort(key=lambda (a, b, c, d, e, f, g, h, i):(g, h), reverse=True)
 					resultados.append(resultado_valor[0])
 					
 					# IMPRIMIMOS RESULTADOS
@@ -240,32 +248,33 @@ def calculoMejorValor():
 	
 	
 	# ESCRIBIR FICHERO CSV CON RESULTADOS
-	if CSV_RESULTADOS=='si': escribir_csv_resultados(resultados)	
+	if CSV_RESULTADOS == 'si': escribir_csv_resultados(resultados)	
 	
 	
 	
-def procesar_valor(VALOR,CODIGO,RESOLUCION,DIRECTORIO_BASE):
+def procesar_valor(VALOR, CODIGO, RESOLUCION, DIRECTORIO_BASE):
+	''' lee un fichero json con valores y prepara un csv con datos para uso posterior
+	(macd, rsi, estocastico, medias, etc. Deja el fichero en data/csv/xx/xx.csvç
+	lee los valores desde fichero de configuracion, opcion descargar'''
 	
 	fname = VALOR 
 	print ("procesando valor {:<10} Resolucion {:>3}".format(fname, RESOLUCION))
 	
 	data = get_json_file(fname, RESOLUCION)
 	
-	cierre,apertura,high,low = set_arrays_from_json_data(data)
+	cierre, apertura, high, low = set_arrays_from_json_data(data)
 	if cierre == None: 
 		print ("error al procesar ", fname)
 		return 
 	
 	lecturas = len(cierre)	
 	fecha = fb.get_fechas(data)
-	
-	
-	
+
 	file_path = os.path.join(DIRECTORIO_BASE, 'csv', RESOLUCION, fname + '.csv')	
 	
 	if os.path.exists(file_path):
 		print ('existe {}'.format(file_path))
-		data = cargar_valores(VALOR,RESOLUCION)
+		data = cargar_valores(VALOR, RESOLUCION)
 		datetime_json = datetime.strptime(fecha[-1], "%Y-%m-%d %H:%M")
 		datetime_file = datetime.strptime(data['fecha'][-1], "%Y-%m-%d %H:%M")
 		# nada que hacer, las fechas no son superiores
@@ -274,13 +283,10 @@ def procesar_valor(VALOR,CODIGO,RESOLUCION,DIRECTORIO_BASE):
 			cierre_file = data['close'][-1]	
 			if cierre_json == cierre_file:
 				print ('saliendo sin cambios, nada que anexar')
-				# print ('\t\t', cierre_file, cierre_json)
 				return
 	
-	# print (len(fecha), len(cierre),len(apertura),len(high),len(low))
 	
-	
-	macd, macd_signal, macd_histograma = fb.get_macd(cierre,12,26,9)
+	macd, macd_signal, macd_histograma = fb.get_macd(cierre, 12, 26, 9)
 	
 	rsi14 = fb.calcular_rsi(14, cierre)
 	rsi50 = fb.calcular_rsi(50, cierre)
@@ -288,135 +294,129 @@ def procesar_valor(VALOR,CODIGO,RESOLUCION,DIRECTORIO_BASE):
 	estocastico_sk_14, estocastico_sd_14 = fb.calcular_estocastico(cierre, high, low, 14, 3)
 	estocastico_sk_50, estocastico_sd_50 = fb.calcular_estocastico(cierre, high, low, 14, 3)	
 		
-	# sma = [0]*201
-	# ema = [0]*201
-	
-	#calcula emas de 5 a 200
-	sma5 = fb.get_sma_periodo(5,cierre)
-	ema5 = fb.get_ema_periodo(5,cierre)
+	sma5 = fb.get_sma_periodo(5, cierre)
+	ema5 = fb.get_ema_periodo(5, cierre)
 
-	sma20 = fb.get_sma_periodo(20,cierre)
-	ema20 = fb.get_ema_periodo(20,cierre)
+	sma20 = fb.get_sma_periodo(20, cierre)
+	ema20 = fb.get_ema_periodo(20, cierre)
 	
-	sma200 = fb.get_sma_periodo(200,cierre)
-	ema200 = fb.get_ema_periodo(200,cierre)
+	sma200 = fb.get_sma_periodo(200, cierre)
+	ema200 = fb.get_ema_periodo(200, cierre)
 
-	sma100 = fb.get_sma_periodo(100,cierre)
-	ema100 = fb.get_ema_periodo(100,cierre)
+	sma100 = fb.get_sma_periodo(100, cierre)
+	ema100 = fb.get_ema_periodo(100, cierre)
 
-	sma50 = fb.get_sma_periodo(50,cierre)
-	ema50 = fb.get_ema_periodo(50,cierre)
+	sma50 = fb.get_sma_periodo(50, cierre)
+	ema50 = fb.get_ema_periodo(50, cierre)
 	
-	sma400 = fb.get_sma_periodo(400,cierre)
-	ema400 = fb.get_ema_periodo(400,cierre)
+	sma400 = fb.get_sma_periodo(400, cierre)
+	ema400 = fb.get_ema_periodo(400, cierre)
 	
-	
-	
-	# print ('desde {} hasta {}'.format(fecha[0], fecha[-1]))
-	
-	directorio_destino =  os.path.join(DIRECTORIO_BASE, 'csv', RESOLUCION)	
+	directorio_destino = os.path.join(DIRECTORIO_BASE, 'csv', RESOLUCION)	
 	if not os.path.exists(directorio_destino):
 		os.makedirs(directorio_destino)
 		print ("creando directorio.... {}".format(directorio_destino))
 	
-	
-	
+
 	file_path = os.path.join(DIRECTORIO_BASE, 'csv', RESOLUCION, fname + '.csv')	
 	if os.path.exists(file_path):		
-		data = cargar_valores(VALOR,RESOLUCION)
+		data = cargar_valores(VALOR, RESOLUCION)
 		
 		datetime_json = datetime.strptime(fecha[-1], "%Y-%m-%d %H:%M")
 		datetime_file = datetime.strptime(data['fecha'][-1], "%Y-%m-%d %H:%M")
 			
 		print ("anexando desde {}".format(data['fecha'][-1]))
-		# print ('append fechas nuevas desde {} hasta {}'.format(data['fecha'][-1], fecha[-1] ))
-	
-		# aqui tenemos que modificar el ultimo valor en caso de que haya variacion
-		# puedo cargar los valores a cargar en dataset y luego a�adirlos al fichero csv
-		# y luego recorrer el fichero y eliminar el penultimo valor
-		
-		with open( file_path, 'ab') as csvfile:
+			
+		with open(file_path, 'ab') as csvfile:
 			spamwriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-			# dataset = ['fecha','apertura','cierre','high','low','macd','macd_signal','macd_histograma','rsi14','rsi50','esk14','esd14','esk50', 'esd50','sma[5]','ema[5]','sma[20]','ema[20]','sma[50]','ema[50]','sma[100]','ema[100]','sma[200]','ema[200]','sma[400]','ema[400]']			
-			# spamwriter.writerow(dataset)
 				
 			for x in range(0, len(fecha)):
 				datetime_json = datetime.strptime(fecha[x], "%Y-%m-%d %H:%M")
-				if datetime_json > datetime_file: # if datetime_json >= datetime_file: anade fila nueva	repitiendo		
-					dataset = [fecha[x],apertura[x],cierre[x],high[x],low[x],macd[x],macd_signal[x],macd_histograma[x],rsi14[x],rsi50[x],estocastico_sk_14[x],estocastico_sd_14[x],estocastico_sk_50[x], estocastico_sd_50[x], sma5[x], ema5[x], sma20[x], ema20[x], sma50[x], ema50[x], sma100[x], ema100[x], sma200[x], ema200[x], sma400[x], ema400[x]]			
+				if datetime_json > datetime_file:  # if datetime_json >= datetime_file: anade fila nueva	repitiendo		
+					dataset = [fecha[x], apertura[x], cierre[x], high[x], low[x], macd[x], macd_signal[x], macd_histograma[x], rsi14[x], rsi50[x], estocastico_sk_14[x], estocastico_sd_14[x], estocastico_sk_50[x], estocastico_sd_50[x], sma5[x], ema5[x], sma20[x], ema20[x], sma50[x], ema50[x], sma100[x], ema100[x], sma200[x], ema200[x], sma400[x], ema400[x]]			
 					spamwriter.writerow(dataset)
-					# print ("\t\t Anadiendo {}".format(datetime_json))
-				# else:
-					# print ("\t\t Saliendo en {}".format(datetime_file))
-		
+			
 	else:
 		print ('nuevo {}'.format(file_path))
-		with open( file_path, 'wb') as csvfile:
-			spamwriter = csv.writer(csvfile, delimiter=';',quotechar='|', quoting=csv.QUOTE_MINIMAL)
-			dataset = ['fecha','apertura','cierre','high','low','macd','macd_signal','macd_histograma','rsi14','rsi50','esk14','esd14','esk50', 'esd50','sma[5]','ema[5]','sma[20]','ema[20]','sma[50]','ema[50]','sma[100]','ema[100]','sma[200]','ema[200]','sma[400]','ema[400]']			
+		with open(file_path, 'wb') as csvfile:
+			spamwriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+			dataset = ['fecha', 'apertura', 'cierre', 'high', 'low', 'macd', 'macd_signal', 'macd_histograma', 'rsi14', 'rsi50', 'esk14', 'esd14', 'esk50', 'esd50', 'sma[5]', 'ema[5]', 'sma[20]', 'ema[20]', 'sma[50]', 'ema[50]', 'sma[100]', 'ema[100]', 'sma[200]', 'ema[200]', 'sma[400]', 'ema[400]']			
 			spamwriter.writerow(dataset)
 				
-			for x in range(0,lecturas):
-				dataset = [fecha[x],apertura[x],cierre[x],high[x],low[x],macd[x],macd_signal[x],macd_histograma[x],rsi14[x],rsi50[x],estocastico_sk_14[x],estocastico_sd_14[x],estocastico_sk_50[x], estocastico_sd_50[x], sma5[x], ema5[x], sma20[x], ema20[x], sma50[x], ema50[x], sma100[x], ema100[x], sma200[x], ema200[x], sma400[x], ema400[x]]			
+			for x in range(0, lecturas):
+				dataset = [fecha[x], apertura[x], cierre[x], high[x], low[x], macd[x], macd_signal[x], macd_histograma[x], rsi14[x], rsi50[x], estocastico_sk_14[x], estocastico_sd_14[x], estocastico_sk_50[x], estocastico_sd_50[x], sma5[x], ema5[x], sma20[x], ema20[x], sma50[x], ema50[x], sma100[x], ema100[x], sma200[x], ema200[x], sma400[x], ema400[x]]			
 				spamwriter.writerow(dataset)
 
 
 
 
+
+
 def prepararDatos():
+	''' lee un fichero json con valores y prepara un csv con datos para uso posterior
+	(macd, rsi, estocastico, medias, etc. Deja el fichero en data/csv/xx/xx.csvç
+	lee los valores desde fichero de configuracion, opcion descargar'''
+	
 	configuracion = 'configuracion.cfg'
 	# LECTURA DE VALORES DE CONFIGURACION
 	config = ConfigParser.ConfigParser()
 	config.read(configuracion)
 	directorio_base = config.get('data', 'directorio_base')
+	
 	TIPOS = config.get('descargar', 'TIPOS').split(',')
 	RESOLUCIONES = config.get('descargar', 'RESOLUCIONES').split(',')
 	PROCESAR = config.get('descargar', 'PROCESAR').split(',')
 	
-	
 	valores = cargar_valores_from_csv(None)
 	for row in valores:
-		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+		valor, lotes, margen, spread, tp_spread, tipo, codigo, nombre, descripcion = row
 		if valor in PROCESAR: 
 			for RESOLUCION in RESOLUCIONES:
 				try:
-					procesar_valor(valor,codigo,RESOLUCION,directorio_base)
+					procesar_valor(valor, codigo, RESOLUCION, directorio_base)
 				except:
 					print ("error al procesar {}".format(valor))
-					
+				
+				
+				
+				
+				
 def descargarDatos():
+	''' descarga datos en json desde investing.com. Resultado en data/XX/XX.json '''
 
 	TIEMPO = 365 * 10
 	FILENAME = 'valores.csv'
+	
 	configuracion = 'configuracion.cfg'
 	
 	# LECTURA DE VALORES DE CONFIGURACION
 	config = ConfigParser.ConfigParser()
 	config.read(configuracion)
 	directorio_base = config.get('data', 'directorio_base')
+	
 	TIPOS = config.get('descargar', 'TIPOS').split(',')
 	RESOLUCIONES = config.get('descargar', 'RESOLUCIONES').split(',')
 	PROCESAR = config.get('descargar', 'PROCESAR').split(',')
 	
 	valores = cargar_valores_from_csv(TIPOS)
 	for row in valores:
-		valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+		valor, lotes, margen, spread, tp_spread, tipo, codigo, nombre, descripcion = row
 		if valor in PROCESAR:
 			for resolucion in RESOLUCIONES:
-				uri = create_url(codigo,resolucion,TIEMPO)
+				uri = create_url(codigo, resolucion, TIEMPO)
 				print ("descargando valor {: >10}({: >10}) Resolucion {: >5}".format(valor, codigo, resolucion))
 
 				data = get_json(uri)
 				
 				filename = valor + '.json'
-				directorio_destino =  os.path.join(directorio_base,'data',resolucion)
+				directorio_destino = os.path.join(directorio_base, 'data', resolucion)
 				if not os.path.exists(directorio_destino):
 					os.makedirs(directorio_destino)
 					print ("creando directorio.... {}".format(directorio_destino))
 				
-				fname = os.path.join(directorio_destino,filename)
+				fname = os.path.join(directorio_destino, filename)
 				print ("guardando archivo {}".format(fname))
-				f = open(fname,'w')
+				f = open(fname, 'w')
 				f.write(data)
 				f.close()
 				
@@ -430,15 +430,15 @@ def escribir_csv_resultados(resultados):
 	ahora = datetime.now().strftime("%Y_%m_%d_%H_%M")
 	
 	
-	directorio_destino =  os.path.join(directorio_base,'result')
+	directorio_destino = os.path.join(directorio_base, 'result')
 	if not os.path.exists(directorio_destino):
 		os.makedirs(directorio_destino)
 		print ("creando directorio.... {}".format(directorio_destino))
 	
 	
 	filename = os.path.join(directorio_base, 'result', 'medias.csv')
-	with open( filename, 'wb') as csvfile:
-		spamwriter = csv.writer(csvfile, delimiter=';',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+	with open(filename, 'wb') as csvfile:
+		spamwriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 		dataset = ['valor', 'tiempo', 'funcion', 'periodo', 'numero_operaciones', 'total', 'largos', 'cortos']			
 		spamwriter.writerow(dataset)
 						
@@ -460,20 +460,20 @@ def get_valores_proceso(config):
 	CABECERA = config.get('resultados', 'CABECERA')
 	IMPRIMIR = config.get('resultados', 'IMPRIMIR')
 	
-	if CABECERA=='si': 
+	if CABECERA == 'si': 
 		CABECERA = True
 	else:
 		CABECERA = False
 		
-	if IMPRIMIR=='si': 
+	if IMPRIMIR == 'si': 
 		IMPRIMIR = True
 	else:
 		IMPRIMIR = False
 	
 	
 	TIPOS = config.get('calculo', 'TIPOS')
-	if TIPOS=='None':
-		TIPOS=None
+	if TIPOS == 'None':
+		TIPOS = None
 	else:
 		TIPOS = TIPOS.split(',')
 	
@@ -494,20 +494,20 @@ def get_valores_proceso_hora(config):
 	CABECERA = config.get('resultados', 'CABECERA')
 	IMPRIMIR = config.get('resultados', 'IMPRIMIR')
 	
-	if CABECERA=='si': 
+	if CABECERA == 'si': 
 		CABECERA = True
 	else:
 		CABECERA = False
 		
-	if IMPRIMIR=='si': 
+	if IMPRIMIR == 'si': 
 		IMPRIMIR = True
 	else:
 		IMPRIMIR = False
 	
 	
 	TIPOS = config.get('hora', 'TIPOS')
-	if TIPOS=='None':
-		TIPOS=None
+	if TIPOS == 'None':
+		TIPOS = None
 	else:
 		TIPOS = TIPOS.split(',')
 	
@@ -528,20 +528,20 @@ def get_valores_proceso_flujo(config):
 	CABECERA = config.get('resultados', 'CABECERA')
 	IMPRIMIR = config.get('resultados', 'IMPRIMIR')
 	
-	if CABECERA=='si': 
+	if CABECERA == 'si': 
 		CABECERA = True
 	else:
 		CABECERA = False
 		
-	if IMPRIMIR=='si': 
+	if IMPRIMIR == 'si': 
 		IMPRIMIR = True
 	else:
 		IMPRIMIR = False
 	
 	
 	TIPOS = config.get('flujo', 'TIPOS')
-	if TIPOS=='None':
-		TIPOS=None
+	if TIPOS == 'None':
+		TIPOS = None
 	else:
 		TIPOS = TIPOS.split(',')
 	
@@ -550,34 +550,40 @@ def get_valores_proceso_flujo(config):
 
 
 
+
 def cargar_valores_from_csv(tipos=None):
+	''' carga de valores desde fichero valores.csv '''
+	
 	data = []
-	fname = os.path.join(os.path.dirname(__file__),'..','valores.csv')
+	fname = os.path.join(os.path.dirname(__file__), '..', 'valores.csv')
 	with open(fname, 'rb') as csvfile:
 		spamreader = csv.reader(csvfile, delimiter=';')
 		for row in spamreader:
-			valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+			valor, lotes, margen, spread, tp_spread, tipo, codigo, nombre, descripcion = row
 			if tipos is None:
 				data.append(row)
 			elif tipo in tipos:
-					data.append(row)
+				data.append(row)
 
 	return data
+
+
+
 	
 def cargar_datos_valor(valor, periodo='D'):
 	data = []
-	fname = os.path.join(os.path.dirname(__file__),'..','valores.csv')
+	fname = os.path.join(os.path.dirname(__file__), '..', 'valores.csv')
 	with open(fname, 'rb') as csvfile:
 		spamreader = csv.reader(csvfile, delimiter=';')
 		for row in spamreader:
-			v,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
+			v, lotes, margen, spread, tp_spread, tipo, codigo, nombre, descripcion = row
 			if v == valor:
-				data = cargar_valores(valor,periodo)
+				data = cargar_valores(valor, periodo)
 
 	return data
 
 	
-def get_datos(data,numero=500):
+def get_datos(data, numero=500):
 
 	data['fecha'] = data['fecha'][-numero:]
 	data['open'] = data['open'][-numero:]
@@ -611,7 +617,9 @@ def get_datos(data,numero=500):
 	
 
 def preparar_datos(spamreader):
-		
+	''' carga los valores de un fichero csv en un array '''
+	
+	
 	fecha = []
 	apertura = []
 	cierre = []
@@ -640,9 +648,9 @@ def preparar_datos(spamreader):
 	ema400 = []
 		
 	for row in spamreader:
-		vfecha,vapertura,vcierre,vhigh,vlow,vmacd,vmacd_signal,vmacd_histograma, \
-			vrsi14,vrsi50,vesk14,vesd14,vesk50,vesd50,vsma5,vema5,vsma20,vema20,vsma50,vema50,vsma100,vema100,vsma200,vema400,vsma400,vema200 = row
-		if vapertura=="apertura": continue
+		vfecha, vapertura, vcierre, vhigh, vlow, vmacd, vmacd_signal, vmacd_histograma, \
+			vrsi14, vrsi50, vesk14, vesd14, vesk50, vesd50, vsma5, vema5, vsma20, vema20, vsma50, vema50, vsma100, vema100, vsma200, vema400, vsma400, vema200 = row
+		if vapertura == "apertura": continue
 		fecha.append(vfecha)
 		apertura.append(float(vapertura))
 		cierre.append(float(vcierre))
@@ -699,12 +707,13 @@ def preparar_datos(spamreader):
 	data['sma400'] = sma400
 	data['ema400'] = ema400
 	
-	
-	
 	return data
 	
-def cargar_valores(VALOR,PERIODO):
-
+	
+	
+	
+def cargar_valores(VALOR, PERIODO):
+	''' carga los valores de un fichero csv en un array '''
 
 	config = ConfigParser.ConfigParser()
 	config.read('configuracion.cfg')
@@ -726,7 +735,7 @@ def set_arrays_from_json_data(data):
 	try:
 		lecturas = len(data['c'])
 		for x in range(0, lecturas):
-			if (float(data['c'][x])==0): continue	
+			if (float(data['c'][x]) == 0): continue	
 			cierre.append(data['c'][x])
 			apertura.append(data['o'][x])
 			high.append(data['h'][x])
@@ -734,27 +743,30 @@ def set_arrays_from_json_data(data):
 		
 		return cierre, apertura, high, low
 	except:
-		return None,None,None,None
+		return None, None, None, None
 		
 def get_json(url):
+	''' lee un json desde una url '''
 	context = ssl._create_unverified_context()
 	response = urllib.urlopen(url, context=context)
 	data = response.read()
 	return data
 
 def get_json_file(VALOR, RESOLUCION):
+	''' carga un json desde fichero '''
 	filename = VALOR + '.json'
 	config = ConfigParser.ConfigParser()
 	config.read('configuracion.cfg')
 	directorio_base = config.get('data', 'directorio_base')
-	fname = os.path.join(directorio_base,'data',RESOLUCION,filename)
+	fname = os.path.join(directorio_base, 'data', RESOLUCION, filename)
 	with open(fname, "r") as f:
 		d = f.read()
 	
 	data = json.loads(d)
 	return data
 
-def create_url(VALOR,TIEMPO_GRAFICO,TIEMPO):
+def create_url(VALOR, TIEMPO_GRAFICO, TIEMPO):
+	''' crea url para descarga de datos desde investing.com '''
 	dt = datetime.now()
 	if TIEMPO_GRAFICO == '1':
 		dt2 = dt - timedelta(minutes=TIEMPO)
@@ -771,6 +783,6 @@ def create_url(VALOR,TIEMPO_GRAFICO,TIEMPO):
 	sec_since_epoch2 = mktime(dt2.timetuple()) + dt2.microsecond / 1000000.0
 	millis_since_epoch2 = round(sec_since_epoch2)
 
-	url = "https://tvc4.forexpros.com/0d941e0ab58b4e0421ca50db636091fd/1508161952/4/4/58/history?symbol={}&resolution={}&from={:0.0f}&to={:0.0f}".format(VALOR,str(TIEMPO_GRAFICO),millis_since_epoch2,millis_since_epoch)
+	url = "https://tvc4.forexpros.com/0d941e0ab58b4e0421ca50db636091fd/1508161952/4/4/58/history?symbol={}&resolution={}&from={:0.0f}&to={:0.0f}".format(VALOR, str(TIEMPO_GRAFICO), millis_since_epoch2, millis_since_epoch)
 
 	return url

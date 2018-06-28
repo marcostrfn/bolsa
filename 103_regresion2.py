@@ -7,16 +7,10 @@ import csv
 import pandas as pd
 import ConfigParser
 import datetime
-
-
-# Implementacion del metodo del gradiente con pandas
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from array import array
-
-
 
 def test_graph(data, valor, HORA_INICIO, HORA_FINAL, HORA_DESTINO):
     
@@ -41,9 +35,6 @@ def test_graph(data, valor, HORA_INICIO, HORA_FINAL, HORA_DESTINO):
         else:
             asignar.append(colores[3])
             
-    
-    
-    
     directorio_destino = os.path.join(DIR_BASE, 'graficos')    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
@@ -109,6 +100,9 @@ config.read(configuracion)
 DIR_BASE = config.get('data', 'directorio_base')
     
 if __name__ == '__main__':
+    ''' calcula la diferencia de precios de cierre de un valor
+    en distintos horarios y deja el resultado en una grafica en
+    graficos/comparativaHoraria'''
     
     PROCESAR = 'DE30'        
 
