@@ -45,8 +45,13 @@ def test_graph(data, valor, HORA_INICIO, HORA_FINAL, HORA_DESTINO):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
         
-    
-    filenameGrafico = os.path.join(DIR_BASE, 'graficos', 'comparativaHoraria', '{}-{}-{}-{}.png'.format(valor,HORA_INICIO, HORA_FINAL,HORA_DESTINO))       
+
+    directorio_destino = os.path.join(DIR_BASE, 'graficos', 'comparativaHoraria',valor)    
+    if not os.path.exists(directorio_destino):
+        os.makedirs(directorio_destino)
+        print ("creando directorio.... {}".format(directorio_destino))
+ 
+    filenameGrafico = os.path.join(DIR_BASE, 'graficos', 'comparativaHoraria', valor, '{}-{}-{}.png'.format(HORA_INICIO, HORA_FINAL,HORA_DESTINO))       
                 
     plt.scatter(df['puntos_inicio'], df['puntos_final'], c=asignar, s=tamanios[0])
     plt.title('Comparativa {} {}-{} a {}'.format(valor, HORA_INICIO, HORA_FINAL, HORA_DESTINO))
@@ -59,10 +64,7 @@ def test_graph(data, valor, HORA_INICIO, HORA_FINAL, HORA_DESTINO):
     plt.close()
 
     
-    
-
-        
-        
+       
 def procesa(DIR_BASE, HORA_INICIO, HORA_FINAL, HORA_DESTINO, PROCESAR, filename):
     
     array_result = []
@@ -93,30 +95,34 @@ def procesa(DIR_BASE, HORA_INICIO, HORA_FINAL, HORA_DESTINO, PROCESAR, filename)
 
 
 
-configuracion = 'configuracion.cfg'
-# LECTURA DE VALORES DE CONFIGURACION
-config = ConfigParser.ConfigParser()
-config.read(configuracion)
-DIR_BASE = config.get('data', 'directorio_base')
     
 if __name__ == '__main__':
     ''' calcula la diferencia de precios de cierre de un valor
     en distintos horarios y deja el resultado en una grafica en
     graficos/comparativaHoraria'''
-    
-    PROCESAR = 'DE30'        
 
-    filename = os.path.join(DIR_BASE,'csv','60','{}.csv'.format(PROCESAR))
+
+    configuracion = 'configuracion.cfg'
+    # LECTURA DE VALORES DE CONFIGURACION
+    config = ConfigParser.ConfigParser()
+    config.read(configuracion)
+    DIR_BASE = config.get('data', 'directorio_base')
     
+    VALORES_A_PROCESAR = ['DE30','US500','OIL.WTI','EURUSD']        
+
+
     HORAS = [(8,8,21),(8,9,21),(8,10,21),(8,12,21),(8,16,21),
-             (9,9,21),(9,10,21),(9,12,21),
-             (8,8,16),(8,9,16),(8,10,16),(8,12,16),
-             (9,9,16),(9,10,16),(9,12,16),
-             (14,14,21),(14,15,21),(14,16,21),(14,17,21),
-             (16,16,21),(16,17,21),
-             (17,17,21)]
+            (9,9,21),(9,10,21),(9,12,21),
+            (8,8,16),(8,9,16),(8,10,16),(8,12,16),
+            (9,9,16),(9,10,16),(9,12,16),
+            (14,14,21),(14,15,21),(14,16,21),(14,17,21),
+            (16,16,21),(16,17,21),
+            (17,17,21)]
     
-    for horas in HORAS:
-        (hora_inicio,hora_final,hora_destino) = horas     
-        procesa(DIR_BASE, hora_inicio, hora_final, hora_destino, PROCESAR, filename)        
+    
+    for PROCESAR in VALORES_A_PROCESAR:
+        filename = os.path.join(DIR_BASE,'csv','60','{}.csv'.format(PROCESAR))
+        for horas in HORAS:
+            (hora_inicio,hora_final,hora_destino) = horas     
+            procesa(DIR_BASE, hora_inicio, hora_final, hora_destino, PROCESAR, filename)        
         

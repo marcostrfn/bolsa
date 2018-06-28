@@ -25,10 +25,8 @@ import ConfigParser
 def addPageNumber(canvas, doc):
     """
     Add the page number
-    """
-    
+    """  
     # a4 = 210 x 197
-    
     page_num = canvas.getPageNumber()
     text = "Page %s" % page_num
     canvas.drawRightString(200*mm, 20*mm, text)
@@ -43,15 +41,12 @@ def crea_report(fname, front_cover, back_cover, path, path2, path3, path4, media
     
     stylesheet = getSampleStyleSheet()
     
-    
     filename = os.path.join(path, fname)
     doc = SimpleDocTemplate(filename, pagesize=portrait(A4))
-    
     
     elements_medias = crearTablaMedias(path, medias)
     elements_horas = crearTablaHoras(path, horas)
     elements_pivot= crearTablaPivot(path, pivot)
-    
     
     Story=[]
     
@@ -70,28 +65,27 @@ def crea_report(fname, front_cover, back_cover, path, path2, path3, path4, media
     for file in glob.glob("*.png"):
         pictures.append(os.path.join(path_valores_par,file))
 
-    os.chdir(path_valores_w)
-    pictures_w = []
-    for file in glob.glob("*.png"):
-        pictures_w.append(os.path.join(path_valores_w,file))
-        
-    os.chdir(path_valores_d)
-    pictures_d = []
-    for file in glob.glob("*.png"):
-        pictures_d.append(os.path.join(path_valores_d,file))
-    
-            
-    os.chdir(path_valores_60)
-    pictures_60 = []
-    for file in glob.glob("*.png"):
-        pictures_60.append(os.path.join(path_valores_60,file))
+#
+# eliminando graficos de valores del reporte
+#
+#     os.chdir(path_valores_w)
+#     pictures_w = []
+#     for file in glob.glob("*.png"):
+#         pictures_w.append(os.path.join(path_valores_w,file))
+#     os.chdir(path_valores_d)
+#     pictures_d = []
+#     for file in glob.glob("*.png"):
+#         pictures_d.append(os.path.join(path_valores_d,file))          
+#     os.chdir(path_valores_60)
+#     pictures_60 = []
+#     for file in glob.glob("*.png"):
+#         pictures_60.append(os.path.join(path_valores_60,file))
     
     os.chdir(path_valores_horas)
     pictures_mh = []
     for file in glob.glob("*.png"):
         pictures_mh.append(os.path.join(path_valores_horas,file))
-    
-    
+        
     # Story.append(Image(front_cover, width, height))
     # Story.append(PageBreak())
     
@@ -115,24 +109,21 @@ def crea_report(fname, front_cover, back_cover, path, path2, path3, path4, media
         Story.append(Image(pic, width, height))
         Story.append(PageBreak())
 
-    Story.append(Paragraph('VALORES EN GRAFICO SEMANAL', stylesheet['Title']))
-    for pic in pictures_w:
-        Story.append(Image(pic, width, height))
-        Story.append(PageBreak())
+#     Story.append(Paragraph('VALORES EN GRAFICO SEMANAL', stylesheet['Title']))
+#     for pic in pictures_w:
+#         Story.append(Image(pic, width, height))
+#         Story.append(PageBreak())
+# 
+#     Story.append(Paragraph('VALORES EN GRAFICO DIARIO', stylesheet['Title']))
+#     for pic in pictures_d:
+#         Story.append(Image(pic, width, height))
+#         Story.append(PageBreak())
+# 
+#     Story.append(Paragraph('VALORES EN GRAFICO HORARIO', stylesheet['Title']))
+#     for pic in pictures_60:
+#         Story.append(Image(pic, width, height))
+#         Story.append(PageBreak())
 
-    Story.append(Paragraph('VALORES EN GRAFICO DIARIO', stylesheet['Title']))
-    for pic in pictures_d:
-        Story.append(Image(pic, width, height))
-        Story.append(PageBreak())
-
-    Story.append(Paragraph('VALORES EN GRAFICO HORARIO', stylesheet['Title']))
-    for pic in pictures_60:
-        Story.append(Image(pic, width, height))
-        Story.append(PageBreak())
-                       
-        
-    # Story.append(Image(back_cover, width, height))
-    # doc.build(Story, onFirstPage=addPageNumber, onLaterPages=addPageNumber)
     doc.build(Story, onLaterPages=addPageNumber)
     print ("creando {}".format(filename))
     
@@ -196,10 +187,7 @@ def leer_pivot_point():
 def crearTablaMedias(path, medias):
     
     stylesheet = getSampleStyleSheet()
-    
-    # filename = os.path.join(path, 'tabla-medias.pdf')
-    # doc = SimpleDocTemplate(filename,  pagesize=portrait(A4))
-    # container for the 'Flowable' objects
+
     elements = []
     
     new_medias = []
@@ -248,18 +236,13 @@ def crearTablaMedias(path, medias):
     elements.append(Spacer(1,12))
     
     elements.append(t)
-    # write the document to disk
-    # doc.build(elements)
     return elements
 
 
 def crearTablaHoras(path, horas):
     
     stylesheet = getSampleStyleSheet()
-    
-    # filename = os.path.join(path, 'tabla-horas.pdf')
-    # doc = SimpleDocTemplate(filename,  pagesize=portrait(A4))
-    # container for the 'Flowable' objects
+
     elements = []
     
     new_horas = []
@@ -328,21 +311,7 @@ def crearTablaPivot(path, data):
     data = new_data
     
     numero_columnas = len(data[0])
-    numero_filas = len(data)
-    
-    
-    '''p = ParagraphStyle('parrafos', 
-        fontSize = 8,
-        fontName="Times-Roman")
-    
-    data_result = []
-    for d in data:
-        data_v = []
-        for v in d:
-            data_v.append(Paragraph(v,p))
-        data_result.append(data_v)
-     
-    data = data_result'''     
+    numero_filas = len(data)    
                    
     t=Table(data,numero_columnas*[20*mm], numero_filas*[10*mm])
     
