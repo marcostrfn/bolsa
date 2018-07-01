@@ -7,6 +7,9 @@ import itertools
 import ConfigParser
 import sys
 
+from clases.Configuracion import Configuracion, CsvData
+
+
 if __name__ == '__main__':   
     ''' graficos de las valores y resultado en /graficos/valores
     lee los valores de fichero de configuracion con tag calculo
@@ -14,17 +17,16 @@ if __name__ == '__main__':
     graficos de correlacion en /graficos/pares
     lee los valores de configuracion tag calculo '''
     
-    configuracion = 'configuracion.cfg'
+    obj_csv = CsvData()
+    obj_config = Configuracion()
     
-    # LECTURA DE valores DE CONFIGURACION
-    config = ConfigParser.ConfigParser()
-    config.read(configuracion)
-    directorio_base = config.get('data', 'directorio_base')
-    procesar = config.get('calculo', 'procesar').split(',')
+    directorio_base = obj_config.get_directorio_base()
+    procesar = obj_config.get_valores_calculo()
+    
     for valor in procesar:
-        fg.graficar_valor(valor,'D', media='mejor')
-        fg.graficar_valor(valor,'60', media='mejor')
-        fg.graficar_valor(valor,'W', media='mejor')
+        fg.graficar_valor(obj_config, valor, 'D', media='mejor')
+        fg.graficar_valor(obj_config, valor, '60', media='mejor')
+        fg.graficar_valor(obj_config, valor, 'W', media='mejor')
             
     C = itertools.permutations(procesar, 2)
     tramitado = []
@@ -33,7 +35,7 @@ if __name__ == '__main__':
             print ("excluir combinacion {}".format(valores))
         else:
             print ("combinar {}".format(valores))
-            fg.combinar_valores(valores,'D',24)
+            fg.combinar_valores(obj_config, valores,'D',24)
         
         if not valores[0] in tramitado:
             tramitado.append(valores[0]) 

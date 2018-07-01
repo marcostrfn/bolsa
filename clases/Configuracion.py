@@ -43,10 +43,18 @@ class Configuracion():
         self.__config = ConfigParser.ConfigParser()
         self.__config.read(self.__configuracion)
         
-        
+    
+    def get(self,key,value):
+        return self.__config.get(key,value)
+    
+    
     def get_valores_calculo(self):
         return self.__config.get('calculo', 'procesar').split(',')
 
+
+    def get_resoluciones_calculo(self):
+        return self.__config.get('calculo', 'resoluciones').split(',')
+    
 
     def get_directorio_base(self):
         return self.__config.get('data', 'directorio_base')

@@ -9,6 +9,8 @@ import ConfigParser
 import funciones.bolsa as fb
 import funciones.data as fd
 
+from clases.Configuracion import Configuracion, CsvData
+
 
 if __name__ == '__main__':
 	''' calcula el mejor horario para el trading de un valor.
@@ -16,7 +18,11 @@ if __name__ == '__main__':
 	Lee los valores de fichero de configuración tag horas
 	Graficos en graficos/horas'''
 	
-	fd.calculo_mejor_hora(grafico=True)
+	obj_csv = CsvData()
+	obj_config = Configuracion()
+	
+	
+	fd.calculo_mejor_hora(obj_config,obj_csv,grafico=True)
 	
 	
 				

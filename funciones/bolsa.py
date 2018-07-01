@@ -6,7 +6,7 @@ import estrategia as fe
 
 
 
-def procesar_valores_hora(valor, tiempo, tipo, data, config):
+def procesar_valores_hora(valor, tiempo, data, config, tipo=None):
 	
 
 	resultados = {
@@ -120,7 +120,7 @@ def procesar_valores_flujo(valor, tiempo, tipo, data, config):
 
 
 	
-def procesar_valores(valor, tiempo, tipo, data, config):
+def procesar_valores(valor, tiempo, data, config, tipo=None):
 	
 	parabolic_sar_bear, parabolic_sar_bull = psar(data['fecha'], data['close'], data['high'], data['low'], 0.02, 0.2)
 

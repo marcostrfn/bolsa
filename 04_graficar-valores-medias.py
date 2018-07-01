@@ -7,16 +7,17 @@ import itertools
 import ConfigParser
 import sys
 
+from clases.Configuracion import Configuracion, CsvData
+
 if __name__ == '__main__':      
     ''' graficos de las mejores medias de trading.
     resultado en /graficos/medias
     lee los valores de fichero de configuracion con tag calculo'''
-     
-    configuracion = 'configuracion.cfg'
-    config = ConfigParser.ConfigParser()
-    config.read(configuracion)
-    directorio_base = config.get('data', 'directorio_base')
-    procesar = config.get('calculo', 'procesar').split(',')
+    
+    obj_csv = CsvData()
+    obj_config = Configuracion()
+    
+    procesar = obj_config.get_valores_calculo()
     for valor in procesar:
-        fg.graficar_valor_medias(valor,'D', media='mejor')
+        fg.graficar_valor_medias(obj_config, valor,'D', media='mejor')
 
