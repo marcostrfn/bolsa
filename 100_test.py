@@ -9,6 +9,29 @@ import funciones.matematica as fm
 import ConfigParser
 import sys
 
+from clases.Configuracion import Configuracion, CsvData
+
+
+csv = CsvData()
+v1 = [d[0] for d in csv.get_valores_by_tipo(['IND'])]
+print (v1)
+
+v = csv.get_valores_by_valor(['DE30','US500'])
+v1 = [d[0] for d in v]
+print (v1)
+ 
+
+
+sys.exit()
+
+config = Configuracion()
+print (config.get_valores_calculo())
+
+
+
+sys.exit()
+
+
 def calcular_porcentajes():
 
     configuracion = 'configuracion.cfg'
