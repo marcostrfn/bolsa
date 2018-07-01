@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from array import array
 
-def test_graph(data, valor, HORA_INICIO, HORA_FINAL, HORA_DESTINO):
+def test_graph(data, valor, hora_inicio, hora_final, hora_destino):
     
     df = pd.DataFrame(data)
     df.columns = ['puntos_inicio','puntos_final']
@@ -35,63 +35,62 @@ def test_graph(data, valor, HORA_INICIO, HORA_FINAL, HORA_DESTINO):
         else:
             asignar.append(colores[3])
             
-    directorio_destino = os.path.join(DIR_BASE, 'graficos')    
+    directorio_destino = os.path.join(dir_base, 'graficos')    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
         
-    directorio_destino = os.path.join(DIR_BASE, 'graficos', 'comparativaHoraria')    
+    directorio_destino = os.path.join(dir_base, 'graficos', 'comparativaHoraria')    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
         
 
-    directorio_destino = os.path.join(DIR_BASE, 'graficos', 'comparativaHoraria',valor)    
+    directorio_destino = os.path.join(dir_base, 'graficos', 'comparativaHoraria',valor)    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
  
-    filenameGrafico = os.path.join(DIR_BASE, 'graficos', 'comparativaHoraria', valor, '{}-{}-{}.png'.format(HORA_INICIO, HORA_FINAL,HORA_DESTINO))       
+    filename_grafico = os.path.join(dir_base, 'graficos', 'comparativaHoraria', valor, '{}-{}-{}.png'.format(hora_inicio, hora_final,hora_destino))       
                 
     plt.scatter(df['puntos_inicio'], df['puntos_final'], c=asignar, s=tamanios[0])
-    plt.title('Comparativa {} {}-{} a {}'.format(valor, HORA_INICIO, HORA_FINAL, HORA_DESTINO))
-    plt.xlabel('PUNTOS A LAS {}-{} '.format(HORA_INICIO,HORA_FINAL))
-    plt.ylabel('PUNTOS A LAS {}'.format(HORA_DESTINO))
+    plt.title('Comparativa {} {}-{} a {}'.format(valor, hora_inicio, hora_final, hora_destino))
+    plt.xlabel('PUNTOS A LAS {}-{} '.format(hora_inicio,hora_final))
+    plt.ylabel('PUNTOS A LAS {}'.format(hora_destino))
     plt.grid()
-    print("generando.... {}".format(filenameGrafico)) 
-    plt.savefig(filenameGrafico)  # save the figure to file
+    print("generando.... {}".format(filename_grafico)) 
+    plt.savefig(filename_grafico)  # save the figure to file
 
     plt.close()
 
     
        
-def procesa(DIR_BASE, HORA_INICIO, HORA_FINAL, HORA_DESTINO, PROCESAR, filename):
+def procesa(dir_base, hora_inicio, hora_final, hora_destino, procesar, filename):
     
     array_result = []
     
     df = pd.read_csv(filename, sep=';')
-    numero_elementos = df.shape[0]
     df['fecha'] = df['fecha'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d %H:%M'))
     
-    datetime_inicio = [d for d in df['fecha'] if d.hour==HORA_INICIO]
+    datetime_inicio = [d for d in df['fecha'] if d.hour==hora_inicio]
     
     for d in datetime_inicio:        
         df_hora_inicio = df.loc[df['fecha']==d]
-        df_hora_comparar =  df.loc[df['fecha']==d.replace(hour=HORA_FINAL)]                
-        df_hora_final = df.loc[df['fecha']==d.replace(hour=HORA_DESTINO)]
+        df_hora_comparar =  df.loc[df['fecha']==d.replace(hour=hora_final)]                
+        df_hora_final = df.loc[df['fecha']==d.replace(hour=hora_destino)]
         
         if df_hora_inicio.empty or df_hora_comparar.empty or df_hora_final.empty:
             continue
 
-        precioApertura = df_hora_inicio['apertura'].values[0]
-        precioCierre = df_hora_final['cierre'].values[0]
-        precioCierreComparar = df_hora_comparar['cierre'].values[0]
+        precio_apertura = df_hora_inicio['apertura'].values[0]
+        precio_cierre = df_hora_final['cierre'].values[0]
+        precio_cierre_comparar = df_hora_comparar['cierre'].values[0]
                             
-        dif1 = precioCierreComparar - precioApertura
-        dif2 = precioCierre - precioApertura
+        dif1 = precio_cierre_comparar - precio_apertura
+        dif2 = precio_cierre - precio_apertura
         array_result.append((dif1,dif2))
                     
-    test_graph(array_result, PROCESAR, HORA_INICIO, HORA_FINAL, HORA_DESTINO)
+    test_graph(array_result, procesar, hora_inicio, hora_final, hora_destino)
 
 
 
@@ -106,12 +105,12 @@ if __name__ == '__main__':
     # LECTURA DE VALORES DE CONFIGURACION
     config = ConfigParser.ConfigParser()
     config.read(configuracion)
-    DIR_BASE = config.get('data', 'directorio_base')
+    dir_base = config.get('data', 'directorio_base')
     
-    VALORES_A_PROCESAR = ['DE30','US500','OIL.WTI','EURUSD']        
+    valores_a_procesar = ['DE30','US500','OIL.WTI','EURUSD']        
 
 
-    HORAS = [(8,8,21),(8,9,21),(8,10,21),(8,12,21),(8,16,21),
+    horas = [(8,8,21),(8,9,21),(8,10,21),(8,12,21),(8,16,21),
             (9,9,21),(9,10,21),(9,12,21),
             (8,8,16),(8,9,16),(8,10,16),(8,12,16),
             (9,9,16),(9,10,16),(9,12,16),
@@ -120,9 +119,9 @@ if __name__ == '__main__':
             (17,17,21)]
     
     
-    for PROCESAR in VALORES_A_PROCESAR:
-        filename = os.path.join(DIR_BASE,'csv','60','{}.csv'.format(PROCESAR))
-        for horas in HORAS:
+    for procesar in valores_a_procesar:
+        filename = os.path.join(dir_base,'csv','60','{}.csv'.format(procesar))
+        for horas in horas:
             (hora_inicio,hora_final,hora_destino) = horas     
-            procesa(DIR_BASE, hora_inicio, hora_final, hora_destino, PROCESAR, filename)        
+            procesa(dir_base, hora_inicio, hora_final, hora_destino, procesar, filename)        
         

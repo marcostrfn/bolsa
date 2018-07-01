@@ -13,5 +13,5 @@ if __name__ == '__main__':
 	deja el resultado en fichero result/medias.csv
 	Lee los valores de fichero de configuración tag calculo'''
 	
-	fd.calculoMejorValor()
+	fd.calculo_mejor_valor()
 	

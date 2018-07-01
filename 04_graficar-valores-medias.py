@@ -16,7 +16,7 @@ if __name__ == '__main__':
     config = ConfigParser.ConfigParser()
     config.read(configuracion)
     directorio_base = config.get('data', 'directorio_base')
-    PROCESAR = config.get('calculo', 'PROCESAR').split(',')
-    for valor in PROCESAR:
-        fg.graficarValorMedias(valor,'D', media='mejor')
+    procesar = config.get('calculo', 'procesar').split(',')
+    for valor in procesar:
+        fg.graficar_valor_medias(valor,'D', media='mejor')
 

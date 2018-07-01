@@ -30,7 +30,6 @@ def print_resultado(registro):
     print (s.format(valor, tipo, titulo, tiempo, periodo, numero_operaciones, total, largos, cortos))
 
 
-
 def media_simple(valor, tiempo, tipo, data):
     # cortes de una media simple
     titulo = "SMA"
@@ -51,7 +50,6 @@ def media_simple(valor, tiempo, tipo, data):
         # de las operaciones ('2018-02-14', '2018-02-27', 99.0),
         l,c = fb.get_simulacion_importes(data,largos,cortos)    
         
-        
         # suma los importes de un array devuelto por get_simulacion_importes
         imp_l = fb.sumar_importes(l)
         imp_c = fb.sumar_importes(c)
@@ -68,8 +66,6 @@ def media_simple(valor, tiempo, tipo, data):
 
 def procesar_valores(valor, tiempo, tipo, data, config):
     
-
-    pivot = fb.calcular_pivot_fibo(data['close'], data['high'], data['low'])
     parabolic_sar_bear, parabolic_sar_bull = fb.psar(data['fecha'], data['close'], data['high'], data['low'], 0.02, 0.2)
 
     resultados = []
@@ -89,7 +85,7 @@ def procesar_valores(valor, tiempo, tipo, data, config):
     # print ()
     return resultados
 
-def normalizarLista(original_vals, rango=1):
+def normalizar_lista(original_vals, rango=1):
     # get max absolute value
     try:
         original_max = max([abs(val) for val in original_vals])
@@ -106,9 +102,9 @@ def normalizarLista(original_vals, rango=1):
     
 
 
-def tratarVelas(velas):
+def tratar_velas(velas):
     
-    velasNormalizadas = []
+    velas_normalizadas = []
     
     
     for vela in velas:    
@@ -133,22 +129,22 @@ def tratarVelas(velas):
         cuerpo = abs(cuerpo)
 
         if diferencia == 0:        
-            tpcSuperior = 0
-            tpcInferior = 0
-            tpcCuerpo = 0
+            tpc_superior = 0
+            tpc_inferior = 0
+            tpc_cuerpo = 0
         else:
-            tpcSuperior = float_round(superior * 100. / diferencia, 0, round)
-            tpcInferior = float_round(inferior * 100. / diferencia, 0, round)
-            tpcCuerpo = float_round(cuerpo * 100. / diferencia, 0, round)
+            tpc_superior = float_round(superior * 100. / diferencia, 0, round)
+            tpc_inferior = float_round(inferior * 100. / diferencia, 0, round)
+            tpc_cuerpo = float_round(cuerpo * 100. / diferencia, 0, round)
         
         
-        velasNormalizadas.append((tipo, tpcSuperior,tpcCuerpo,tpcInferior))
+        velas_normalizadas.append((tipo, tpc_superior,tpc_cuerpo,tpc_inferior))
     
-    return velasNormalizadas
+    return velas_normalizadas
 
 
 
-def getTipoVela(vela):
+def get_tipo_vela(vela):
     t,s,c,i = vela # s=superior, c=centro, i=inferior
         
     k = -1
@@ -167,16 +163,12 @@ def getTipoVela(vela):
         if s==0: k=8
         elif i==0: k=6
         else: k=7
-
-        
         
     elif c >=20 and c <=40:
         if s==0: k=11
         elif i==0: k=9
         else: k=10
-
-            
-            
+     
     elif c >=0 and c <=20:
         if s==0: k=14
         elif i==0: k=12
@@ -187,8 +179,8 @@ def getTipoVela(vela):
     
     
     
-def calcular(VALOR,PERIODO):
-    data = fd.cargar_datos_valor(VALOR, PERIODO)   
+def calcular(valor,periodo):
+    data = fd.cargar_datos_valor(valor, periodo)   
     
     open = data ['open']
     close = data ['close']
@@ -205,14 +197,14 @@ def calcular(VALOR,PERIODO):
     for a in range(0,elementos):
         velas.append([open[a],close[a],high[a],low[a]])
    
-    velasNormalizadas = tratarVelas(velas)
+    velas_normalizadas = tratar_velas(velas)
     
     tipos = {'-1':[], '0':[],'1':[], '2':[], '3':[], '4':[],
              '5':[],'6':[], '7':[], '8':[], '9':[],
              '10':[],'11':[], '12':[], '13':[], '14':[]}
     
-    for vela in velasNormalizadas:
-        k,s,c,i = getTipoVela(vela)
+    for vela in velas_normalizadas:
+        k,s,c,i = get_tipo_vela(vela)
         tipos[str(k)].append([s,c,i])
          
 
@@ -220,17 +212,12 @@ def calcular(VALOR,PERIODO):
         
 
 
-def calculoMejorValor():
+def calculo_mejor_valor():
     
 
-    PROCESAR = ['DE30','US500']
-    RESOLUCIONES = ['60']
-    TIPOS = ['IND']
-    resultados = []    
-
-    # SELECCION DE VALORES
-    l = []
-    
+    procesar = ['DE30','US500']
+    resoluciones = ['60']
+    tipos = ['IND']    
     
     df = pd.read_csv('valores.csv',  names=['valor','lotes','margen','spread','tp_spread','tipo','codigo','nombre','descripcion'], sep=';')
     # print (df.columns)    
@@ -241,32 +228,17 @@ def calculoMejorValor():
     # a = df.dropna()
     # SELECCION DE TIPO
     df = df.loc[df['tipo'] == 'IND' ]
-    valores = [a for a in df['valor'] if a in PROCESAR]
+    valores = [a for a in df['valor'] if a in procesar]
     print (valores)
 
 
-    for VALOR in valores:
-        for PERIODO in RESOLUCIONES:         
-            tipos = calcular(VALOR,PERIODO)
-            print (VALOR)
+    for valor in valores:
+        for periodo in resoluciones:         
+            tipos = calcular(valor,periodo)
+            print (valor)
             
             for k in tipos.keys():
                 print (k, len(tipos[k]))
-                # print (tipos[k])
-#                 for m in tipos[k]:
-#                     m.append(int(k))
-#                     l.append(m)
-#                         
-#     L = []
-#     
-#     for a in l:
-#         if not a in L: L.append(a)       
-#         
-#     for a in L: print (a)  
-#       
-#     print (len(l))
-#     print (len(L))
-    
     
     sys.exit()
 
@@ -280,5 +252,5 @@ def calculoMejorValor():
     ofile.close()
 
                     
-calculoMejorValor()       
+calculo_mejor_valor()       
     

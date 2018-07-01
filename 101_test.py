@@ -13,6 +13,8 @@ import funciones.bolsa as fb
 import funciones.data as fd
 import funciones.estrategia as fe
 
+
+
 def print_resultado(registro):
     valor, tiempo, tipo, titulo,  periodo, numero_operaciones, total, largos, cortos = registro
     s = "{:<10} {:>3}  {:<15} {:>2} {:>4} {: >4} {: >12.2f} {: >12.2f} {: >12.2f}"
@@ -57,8 +59,6 @@ def media_simple(valor, tiempo, tipo, data):
 
 def procesar_valores(valor, tiempo, tipo, data, config):
     
-
-    pivot = fb.calcular_pivot_fibo(data['close'], data['high'], data['low'])
     parabolic_sar_bear, parabolic_sar_bull = fb.psar(data['fecha'], data['close'], data['high'], data['low'], 0.02, 0.2)
 
     resultados = []
@@ -80,46 +80,42 @@ def procesar_valores(valor, tiempo, tipo, data, config):
 
 
 
-def calculoMejorValor():
+def calculo_mejor_valor():
     
     configuracion = 'configuracion.cfg'
     config = ConfigParser.ConfigParser()
     config.read(configuracion)
-    PROCESAR, RESOLUCIONES, CSV_RESULTADOS, IMPRIMIR, CABECERA, TIPOS = fd.get_valores_proceso(config)
+    procesar, resoluciones, csv_resultados, imprimir, cabecera, tipos = fd.get_valores_proceso(config)
 
     resultados = []    
 
     # SELECCION DE VALORES
     
-    valores = fd.cargar_valores_from_csv(TIPOS)    
+    valores = fd.cargar_valores_from_csv(tipos)    
     for row in valores:
         valor,lotes,margen,spread,tp_spread,tipo,codigo,nombre,descripcion = row
         if valor == 'DE30':       
-            for PERIODO in RESOLUCIONES:
+            for periodo in resoluciones:
                 
-                # POR CADA VALOR Y PERIODO
+                # POR CADA VALOR Y periodo
                 try:
-                    VALOR_PROCESAR = valor                            
-                    if CABECERA and IMPRIMIR: print_cabecera(VALOR_PROCESAR, PERIODO)
+                    valor_procesar = valor                            
+                    if cabecera and imprimir: print_cabecera(valor_procesar, periodo)
                     
                     # CARGA DE VALORES
-                    data = fd.cargar_datos_valor(VALOR_PROCESAR, PERIODO)
+                    data = fd.cargar_datos_valor(valor_procesar, periodo)
                         
                     # TRATMIENTO DE LOS VALORES RECIBIDOS
-                    resultado_valor = procesar_valores(VALOR_PROCESAR, PERIODO, tipo, fd.get_datos(data,500), config)                    
+                    resultado_valor = procesar_valores(valor_procesar, periodo, tipo, fd.get_datos(data,500), config)                    
                     resultado_valor.sort(key=lambda (a,b,c,d,e,f,g,h,i):(g,h), reverse=True)
                     resultados.append(resultado_valor[0])
                     
                     for r in resultado_valor: print_resultado(r)
-                    
-
-
-
      
                 except Exception as e:
-                    print ("Error {} {} {}".format(VALOR_PROCESAR, PERIODO, e))
+                    print ("Error {} {} {}".format(valor_procesar, periodo, e))
                     
                     
                     
-calculoMejorValor()       
+calculo_mejor_valor()       
     

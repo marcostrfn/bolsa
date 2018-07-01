@@ -17,18 +17,16 @@ import datetime as dt
 import matplotlib.dates as mdates
  
 
-def graficarResistencias(VALOR,fechas,cierres,soportes,resistencias):
+def graficar_resistencias(valor,fechas,cierres,soportes,resistencias):
     
-    titulo = "Soportes/Resistencias {}".format(VALOR)
+    titulo = "Soportes/Resistencias {}".format(valor)
     fig, ax = plt.subplots(figsize=(24, 12))
 
     print (fechas)
     x = arange(0,len(fechas),1) 
     x = [dt.datetime.strptime(d,'%Y-%m-%d %H:%M') for d in fechas]
-    y = range(len(x)) # many thanks to Kyss Tao for setting me straight here
-    
+
     print (x)
-    
     
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d %b %y %H:%M"))
     plt.gca().xaxis.set_major_locator(mdates.HourLocator(byhour=range(0,24,4)))
@@ -48,7 +46,7 @@ def graficarResistencias(VALOR,fechas,cierres,soportes,resistencias):
     plt.close()
 
 
-def mediaDorada(cierre, sma50, sma200):
+def media_dorada(cierre, sma50, sma200):
     media_50 = []
     media_200 = []
     media = []
@@ -63,21 +61,23 @@ def mediaDorada(cierre, sma50, sma200):
     
     return (media) 
 
+
+
 if __name__ == '__main__':   
     
     configuracion = 'configuracion.cfg'
     config = ConfigParser.ConfigParser()
     config.read(configuracion)
     directorio_base = config.get('data', 'directorio_base')
-    PROCESAR = config.get('calculo', 'PROCESAR').split(',')
+    procesar = config.get('calculo', 'procesar').split(',')
     
-    PERIODO = '60'
+    periodo = '60'
     
-    for VALOR in PROCESAR:
+    for valor in procesar:
         
         
-        data = fd.cargar_datos_valor(VALOR, PERIODO)
-        mejor_media = fd.getMejorMedia(VALOR, '60')
+        data = fd.cargar_datos_valor(valor, periodo)
+        mejor_media = fd.getMejorMedia(valor, '60')
         sma_mejor = fb.get_sma_periodo(int(mejor_media),data['close'])
 
         pivot_point = fb.calcular_pivot_fibo(data['close'], data['high'], data['low'])
@@ -96,19 +96,13 @@ if __name__ == '__main__':
             cierres.append(data['close'][d])
             soportes.append(s3)
             resistencias.append(r3)
-            
-            
-            
+       
         sesiones  = 100
-        graficarResistencias(VALOR,fechas[-sesiones:],cierres[-sesiones:],soportes[-sesiones:],resistencias[-sesiones:])
+        graficar_resistencias(valor,fechas[-sesiones:],cierres[-sesiones:],soportes[-sesiones:],resistencias[-sesiones:])
         sys.exit()
-        
-        
+             
         for d in range(1,len(data['close'])):
             if sma_mejor[d] == 0: continue
-            
-            
-            # print (data['fecha'][d], data['close'][d], sma_mejor[d], pivot_point[d])
            
             accion = None
             
@@ -118,19 +112,16 @@ if __name__ == '__main__':
                     accion = 'comprar ++'
                 elif data['close'][d] <= s2 and data['close'][d] >= s3 and data['rsi14'][d]<=40:
                     accion = 'comprar +'
-                
-
 
             if data['close'] < sma_mejor[d]:
                 s3,s2,s1,pp,r1,r2,r3 = pivot_point[d]
                 if data['close'][d] >= r3 and data['rsi14'][d]>=60:
                     accion = 'vender ++'
                 elif data['close'][d] >= r2 and data['close'][d] <= r3 and data['rsi14'][d]>=60:
-                    accion = 'vender +'     
-
+                    accion = 'vender +'
 
             if accion is not None:
-                print (VALOR, data['fecha'][d], sma_mejor[d], data['rsi14'][d], data['close'][d], accion)
+                print (valor, data['fecha'][d], sma_mejor[d], data['rsi14'][d], data['close'][d], accion)
                            
                     
         sys.exit()

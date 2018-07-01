@@ -16,7 +16,7 @@ if __name__ == '__main__':
 	Lee los valores de fichero de configuración tag horas
 	Graficos en graficos/horas'''
 	
-	fd.calculoMejorHora(grafico=True)
+	fd.calculo_mejor_hora(grafico=True)
 	
 	
 				

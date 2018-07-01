@@ -22,7 +22,7 @@ import StringIO
 import datetime
 import ConfigParser
 
-def addPageNumber(canvas, doc):
+def add_page_number(canvas, doc):
     """
     Add the page number
     """  
@@ -44,19 +44,16 @@ def crea_report(fname, front_cover, back_cover, path, path2, path3, path4, media
     filename = os.path.join(path, fname)
     doc = SimpleDocTemplate(filename, pagesize=portrait(A4))
     
-    elements_medias = crearTablaMedias(path, medias)
-    elements_horas = crearTablaHoras(path, horas)
-    elements_pivot= crearTablaPivot(path, pivot)
+    elements_medias = crear_tabla_medias(path, medias)
+    crear_tabla_horas(path, horas)
+    elements_pivot= crear_tabla_pivot(path, pivot)
     
-    Story=[]
+    story=[]
     
     width = 7*inch
     height = 9*inch    
     
     path_valores_par = path2
-    path_valores_d = os.path.join(path3, 'D')
-    path_valores_60 = os.path.join(path3, '60')
-    path_valores_w = os.path.join(path3, 'W')
     path_valores_horas = path4
     
     
@@ -64,67 +61,34 @@ def crea_report(fname, front_cover, back_cover, path, path2, path3, path4, media
     pictures = []
     for file in glob.glob("*.png"):
         pictures.append(os.path.join(path_valores_par,file))
-
-#
-# eliminando graficos de valores del reporte
-#
-#     os.chdir(path_valores_w)
-#     pictures_w = []
-#     for file in glob.glob("*.png"):
-#         pictures_w.append(os.path.join(path_valores_w,file))
-#     os.chdir(path_valores_d)
-#     pictures_d = []
-#     for file in glob.glob("*.png"):
-#         pictures_d.append(os.path.join(path_valores_d,file))          
-#     os.chdir(path_valores_60)
-#     pictures_60 = []
-#     for file in glob.glob("*.png"):
-#         pictures_60.append(os.path.join(path_valores_60,file))
     
     os.chdir(path_valores_horas)
     pictures_mh = []
     for file in glob.glob("*.png"):
         pictures_mh.append(os.path.join(path_valores_horas,file))
         
-    # Story.append(Image(front_cover, width, height))
-    # Story.append(PageBreak())
     
     for el in elements_medias:
-        Story.append(el)
+        story.append(el)
         
-    Story.append(PageBreak())
+    story.append(PageBreak())
     
     for el in elements_pivot:
-        Story.append(el)
+        story.append(el)
     
-    Story.append(PageBreak())
+    story.append(PageBreak())
     
-    Story.append(Paragraph('Mejor horario Trading', stylesheet['Title']))
+    story.append(Paragraph('Mejor horario Trading', stylesheet['Title']))
     for pic in pictures_mh:
-        Story.append(Image(pic, width, height))
-        Story.append(PageBreak())  
+        story.append(Image(pic, width, height))
+        story.append(PageBreak())  
     
-    Story.append(Paragraph('PARES', stylesheet['Title']))
+    story.append(Paragraph('PARES', stylesheet['Title']))
     for pic in pictures:
-        Story.append(Image(pic, width, height))
-        Story.append(PageBreak())
+        story.append(Image(pic, width, height))
+        story.append(PageBreak())
 
-#     Story.append(Paragraph('VALORES EN GRAFICO SEMANAL', stylesheet['Title']))
-#     for pic in pictures_w:
-#         Story.append(Image(pic, width, height))
-#         Story.append(PageBreak())
-# 
-#     Story.append(Paragraph('VALORES EN GRAFICO DIARIO', stylesheet['Title']))
-#     for pic in pictures_d:
-#         Story.append(Image(pic, width, height))
-#         Story.append(PageBreak())
-# 
-#     Story.append(Paragraph('VALORES EN GRAFICO HORARIO', stylesheet['Title']))
-#     for pic in pictures_60:
-#         Story.append(Image(pic, width, height))
-#         Story.append(PageBreak())
-
-    doc.build(Story, onLaterPages=addPageNumber)
+    doc.build(story, onLaterPages=add_page_number)
     print ("creando {}".format(filename))
     
 
@@ -184,16 +148,13 @@ def leer_pivot_point():
     return data[1:]
 
 
-def crearTablaMedias(path, medias):
+def crear_tabla_medias(path, medias):
     
     stylesheet = getSampleStyleSheet()
 
     elements = []
-    
     new_medias = []
-    
     new_medias.append(['VALOR','TIEMPO','FUNCION','PERIODO','NUM.OP'])
-    
     for m in medias:
         new_medias.append(m[0:5])
     
@@ -204,17 +165,6 @@ def crearTablaMedias(path, medias):
     
     data= medias
     t=Table(data,numero_columnas*[1*inch], numero_filas*[0.4*inch])
-    
-    ''''t.setStyle(TableStyle([('ALIGN',(1,1),(-2,-2),'RIGHT'),
-                           ('TEXTCOLOR',(1,1),(-2,-2),colors.red),
-                           ('VALIGN',(0,0),(0,-1),'TOP'),
-                           ('TEXTCOLOR',(0,0),(0,-1),colors.blue),
-                           ('ALIGN',(0,-1),(-1,-1),'CENTER'),
-                           ('VALIGN',(0,-1),(-1,-1),'MIDDLE'),
-                           ('TEXTCOLOR',(0,-1),(-1,-1),colors.green),
-                           ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                           ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                           ]))'''
 
     t.setStyle(TableStyle([('TEXTCOLOR',(0,1),(-1,-1),colors.blue),
                            ('ALIGN',(0,0),(-1,-1),'CENTER'),
@@ -239,16 +189,14 @@ def crearTablaMedias(path, medias):
     return elements
 
 
-def crearTablaHoras(path, horas):
+def crear_tabla_horas(path, horas):
     
     stylesheet = getSampleStyleSheet()
 
     elements = []
     
     new_horas = []
-    
     new_horas.append(['VALOR','TIPO','PERIODO','HORA'])
-    
     for m in horas:
         new_horas.append(m[0:4])
     
@@ -259,17 +207,6 @@ def crearTablaHoras(path, horas):
     
     data= horas
     t=Table(data,numero_columnas*[1*inch], numero_filas*[0.4*inch])
-    
-    ''''t.setStyle(TableStyle([('ALIGN',(1,1),(-2,-2),'RIGHT'),
-                           ('TEXTCOLOR',(1,1),(-2,-2),colors.red),
-                           ('VALIGN',(0,0),(0,-1),'TOP'),
-                           ('TEXTCOLOR',(0,0),(0,-1),colors.blue),
-                           ('ALIGN',(0,-1),(-1,-1),'CENTER'),
-                           ('VALIGN',(0,-1),(-1,-1),'MIDDLE'),
-                           ('TEXTCOLOR',(0,-1),(-1,-1),colors.green),
-                           ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                           ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                           ]))'''
 
     t.setStyle(TableStyle([('TEXTCOLOR',(0,1),(-1,-1),colors.blue),
                            ('ALIGN',(0,0),(-1,-1),'CENTER'),
@@ -282,27 +219,18 @@ def crearTablaHoras(path, horas):
     elements.append(Spacer(1,12))
     
     elements.append(t)
-    
-    # write the document to disk
-    # doc.build(elements)
 
     return elements
 
 
-def crearTablaPivot(path, data):
+def crear_tabla_pivot(path, data):
     
     stylesheet = getSampleStyleSheet()
     normal = stylesheet["Normal"]
     normal.alignment = TA_CENTER
     
-    
-    # filename = os.path.join(path, 'tabla-horas.pdf')
-    # doc = SimpleDocTemplate(filename,  pagesize=portrait(A4))
-    # container for the 'Flowable' objects
     elements = []
-    
     new_data = []
-    
     new_data.append(['VALOR','S3','S2','S1','PP','R1','R2','R3'])
     
     for m in data:
@@ -314,7 +242,6 @@ def crearTablaPivot(path, data):
     numero_filas = len(data)    
                    
     t=Table(data,numero_columnas*[20*mm], numero_filas*[10*mm])
-    
 
     t.setStyle(TableStyle([('TEXTCOLOR',(0,0),(-1,-1),colors.blue),
                            ('ALIGN',(0,0),(-1,-1),'CENTER'),
@@ -340,16 +267,12 @@ def crearTablaPivot(path, data):
     elements.append(Spacer(1,12))
     
     elements.append(t)
-    
-    
-    # write the document to disk
-    # doc.build(elements)
 
     return elements
 
 
 
-def crearDocumento(medias,horas,pivot):
+def crear_documento(medias,horas,pivot):
     
     path1 = r"C:\tmp\bolsa\graficos\reporte"
     path2 = r"C:\tmp\bolsa\graficos\pares\D"
@@ -365,7 +288,7 @@ def crearDocumento(medias,horas,pivot):
     crea_report(filename, front_cover, back_cover, path1, path2, path3, path4, medias, horas, pivot)
 
 
-def crearReporte():
+def crear_reporte():
     ''' crea un reporte con los graficos de pares, valores
     pivot y mejores horas de trading.
     resultado en pdf en /graficos/valores/reporte'''
@@ -373,6 +296,6 @@ def crearReporte():
     medias = leer_mejores_medias()
     horas = leer_mejores_horas()
     pivot = leer_pivot_point()
-    crearDocumento(medias,horas,pivot)
+    crear_documento(medias,horas,pivot)
     
     

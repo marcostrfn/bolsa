@@ -13,6 +13,6 @@ if __name__ == '__main__':
 	(macd, rsi, estocastico, medias, etc. Deja el fichero en data/csv/xx/xx.csvç
 	lee los valores desde fichero de configuracion, opcion descargar'''
 	
-	fd.prepararDatos()
+	fd.preparar_datos()
 	
 	

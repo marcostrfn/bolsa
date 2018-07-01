@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 
 
-def test_graph(DIR_BASE, archivo, valor, HORA_COMPARAR, HORA_DESTINO):
+def test_graph(dir_base, archivo, valor, hora_comparar, hora_destino):
     
     
     df = pd.read_csv(archivo, header=None, names=['puntos_inicio', 'puntos_final'])
@@ -25,8 +25,6 @@ def test_graph(DIR_BASE, archivo, valor, HORA_COMPARAR, HORA_DESTINO):
 
     asignar=[]
     for index, row in df.iterrows():
-#         if(row['puntos_final'] > 0):
-#             asignar.append(colores[0])
         if (row['puntos_inicio'] > 0): 
             if row['puntos_final'] > row['puntos_inicio']:
                 asignar.append(colores[0])
@@ -43,26 +41,26 @@ def test_graph(DIR_BASE, archivo, valor, HORA_COMPARAR, HORA_DESTINO):
     
     
     
-    directorio_destino = os.path.join(DIR_BASE, 'graficos')    
+    directorio_destino = os.path.join(dir_base, 'graficos')    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
         
-    directorio_destino = os.path.join(DIR_BASE, 'graficos', 'comparativaHoraria')    
+    directorio_destino = os.path.join(dir_base, 'graficos', 'comparativaHoraria')    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
         
     
-    filenameGrafico = os.path.join(DIR_BASE, 'graficos', 'comparativaHoraria', '{}-{}-{}.png'.format(valor,HORA_COMPARAR,HORA_DESTINO))       
+    filename_grafico = os.path.join(dir_base, 'graficos', 'comparativaHoraria', '{}-{}-{}.png'.format(valor,hora_comparar,hora_destino))       
                 
     plt.scatter(df['puntos_inicio'], df['puntos_final'], c=asignar, s=tamanios[0])
-    plt.title('Comparativa {} {}-{}'.format(valor, HORA_COMPARAR, HORA_DESTINO))
-    plt.xlabel('PUNTOS A LAS {}'.format(HORA_COMPARAR))
-    plt.ylabel('PUNTOS A LAS {}'.format(HORA_DESTINO))
+    plt.title('Comparativa {} {}-{}'.format(valor, hora_comparar, hora_destino))
+    plt.xlabel('PUNTOS A LAS {}'.format(hora_comparar))
+    plt.ylabel('PUNTOS A LAS {}'.format(hora_destino))
     plt.grid()
-    print("generando.... {}".format(filenameGrafico)) 
-    plt.savefig(filenameGrafico)  # save the figure to file
+    print("generando.... {}".format(filename_grafico)) 
+    plt.savefig(filename_grafico)  # save the figure to file
 
     plt.close()
 
@@ -71,27 +69,24 @@ def test_graph(DIR_BASE, archivo, valor, HORA_COMPARAR, HORA_DESTINO):
 
         
         
-def procesa(DIR_BASE, HORA_COMPARAR, HORA_DESTINO, PROCESAR, filename):
+def procesa(dir_base, hora_comparar, hora_destino, procesar, filename):
     df = pd.read_csv(filename, sep=';')
-    numero_elementos = df.shape[0]
     df['fecha'] = df['fecha'].apply(lambda x: datetime.datetime.strptime(x,'%Y-%m-%d %H:%M'))
 
+    datetime_compara = [d for d in df['fecha'] if d.hour==hora_comparar]    
+    datetime_destino = [d for d in  df['fecha'] if d.hour==hora_destino]
 
-
-    datetime_compara = [d for d in df['fecha'] if d.hour==HORA_COMPARAR]    
-    datetime_destino = [d for d in  df['fecha'] if d.hour==HORA_DESTINO]
-
-    dfCompara = df.loc[df['fecha'].isin(datetime_compara)]
-    dfDestino = df.loc[df['fecha'].isin(datetime_destino)]
+    df_compara = df.loc[df['fecha'].isin(datetime_compara)]
+    df_destino = df.loc[df['fecha'].isin(datetime_destino)]
     
     
     array_apertura = []
     array_cierre = []
-    for d in dfCompara['fecha']:
+    for d in df_compara['fecha']:
         new_df=df.loc[df['fecha'] == d]
         array_apertura.append( ( d, new_df['apertura'].values[0], new_df['cierre'].values[0] ) )
         
-    for d in dfDestino['fecha']:
+    for d in df_destino['fecha']:
         new_df=df.loc[df['fecha'] == d]
         array_cierre.append( ( d, new_df['cierre'].values[0] ) )
 
@@ -121,24 +116,24 @@ def procesa(DIR_BASE, HORA_COMPARAR, HORA_DESTINO, PROCESAR, filename):
     
     
     
-    test_graph(DIR_BASE, filename, PROCESAR, HORA_COMPARAR, HORA_DESTINO)
+    test_graph(dir_base, filename, procesar, hora_comparar, hora_destino)
 
 
 if __name__ == '__main__':
         
-    PROCESAR = 'DE30'
-    HORA_INICIO = 8
-    HORA_DESTINO = 17
+    procesar = 'DE30'
+    hora_inicio = 8
+    hora_destino = 17
     
     configuracion = 'configuracion.cfg'
     # LECTURA DE VALORES DE CONFIGURACION
     config = ConfigParser.ConfigParser()
     config.read(configuracion)
-    DIR_BASE = config.get('data', 'directorio_base')
+    dir_base = config.get('data', 'directorio_base')
 
-    filename = os.path.join(DIR_BASE,'csv','60','{}.csv'.format(PROCESAR))
+    filename = os.path.join(dir_base,'csv','60','{}.csv'.format(procesar))
     
-    for HORA_COMPARA in range(HORA_INICIO, HORA_DESTINO):
-        procesa(DIR_BASE, HORA_COMPARA, HORA_DESTINO, PROCESAR, filename)
+    for hora_compara in range(hora_inicio, hora_destino):
+        procesa(dir_base, hora_compara, hora_destino, procesar, filename)
         
                           

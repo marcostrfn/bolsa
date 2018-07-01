@@ -30,7 +30,7 @@ from matplotlib import _mathtext_data
 
 
 
-def limpiarGraficas():
+def limpiar_graficas():
     ''' limpia graficos de la carpeta /graficos/ y deja backup en
     carpeta backup'''
     
@@ -62,8 +62,6 @@ def limpiarGraficas():
             if not len(archivos) > 0: continue            
             
             for archivo in archivos:
-                # directorio_destino =  os.path.join(directorio_base,'backup',carpeta_backup)
-                
                 directorios = path.split(base_path)
                 directorios = directorios[1].split(os.sep)
                 
@@ -88,7 +86,7 @@ def limpiarGraficas():
 
 
 
-def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
+def graficar_valor_medias(valor, temporalidad='D', meses=24, media=None):
     ''' graficos de las mejores medias de trading.
     resultado en /graficos/medias
     lee los valores de fichero de configuracion con tag calculo'''
@@ -98,10 +96,10 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
     config = ConfigParser.ConfigParser()
     config.read(configuracion)
     DIRECTORIO_BASE = config.get('data', 'directorio_base')
-    filename = os.path.join(DIRECTORIO_BASE,'csv',TEMPORALIDAD,"{}.csv".format(VALOR))
+    filename = os.path.join(DIRECTORIO_BASE,'csv',temporalidad,"{}.csv".format(valor))
     
     mondays = MonthLocator()
-    daysFmt = DateFormatter("%d %b %y %H:%M")
+    days_fmt = DateFormatter("%d %b %y %H:%M")
 
     quotes = pd.read_csv(filename,
                         index_col=0,
@@ -110,7 +108,7 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
                         sep=";")
     
     if media is not None:
-        mejor_media = fd.getMejorMedia(VALOR, 'D')
+        mejor_media = fd.getMejorMedia(valor, 'D')
         sma_mejor = fb.get_sma_periodo(int(mejor_media),quotes['cierre'])
         
     quotes['sma_mejor'] = sma_mejor
@@ -121,7 +119,7 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
     date1 = date1.strftime("%Y-%m-%d %H:%M")
     date2 = date2.strftime("%Y-%m-%d %H:%M")
     
-    titulo = "{} ( {} ) De {} a {}".format(VALOR,TEMPORALIDAD,date1,date2)
+    titulo = "{} ( {} ) De {} a {}".format(valor,temporalidad,date1,date2)
 
     quotes = quotes[(quotes.index >= date1) & (quotes.index <= date2)]
         
@@ -135,7 +133,7 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))        
     
-    directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'medias', TEMPORALIDAD)    
+    directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'medias', temporalidad)    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
@@ -201,34 +199,34 @@ def graficarValorMedias(VALOR, TEMPORALIDAD='D', meses=24, media=None):
     plt.legend(loc="upper left")
     
     ax1.xaxis.set_major_locator(mondays)
-    ax1.xaxis.set_major_formatter(daysFmt)    
+    ax1.xaxis.set_major_formatter(days_fmt)    
     ax1.autoscale_view()
     ax1.xaxis.grid(True, 'major')
     ax1.grid(True)    
 
     ax2.xaxis.set_major_locator(mondays)
-    ax2.xaxis.set_major_formatter(daysFmt)    
+    ax2.xaxis.set_major_formatter(days_fmt)    
     ax2.autoscale_view()
     ax2.xaxis.grid(True, 'major')
     ax2.grid(True)
        
     ax3.xaxis.set_major_locator(mondays)
-    ax3.xaxis.set_major_formatter(daysFmt)    
+    ax3.xaxis.set_major_formatter(days_fmt)    
     ax3.autoscale_view()
     ax3.xaxis.grid(True, 'major')
     ax3.grid(True)   
     
     fig.autofmt_xdate()
 
-    filenameResult = directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'medias', TEMPORALIDAD, "{}.png".format(VALOR))
+    filename_result = directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'medias', temporalidad, "{}.png".format(valor))
       
-    print("generando.... {}".format(filenameResult)) 
-    plt.savefig(filenameResult) 
+    print("generando.... {}".format(filename_result)) 
+    plt.savefig(filename_result) 
     plt.close()
 
 
 
-def graficoSimple(valor,tituloX,tituloY,data,tipo="linea"):
+def grafico_simple(valor,titulo_x,titulo_y,data,tipo="linea"):
 
     
     
@@ -239,15 +237,15 @@ def graficoSimple(valor,tituloX,tituloY,data,tipo="linea"):
     elif tipo=='barra':
         plt.bar(x,data)
     
-    plt.title(tituloX, fontsize=10)
+    plt.title(titulo_x, fontsize=10)
     # plt.xticks(horas, rotation = 45)  # Colocamos las etiquetas del eje x, en este caso, las fechas
-    plt.ylabel(tituloY)
+    plt.ylabel(titulo_y)
     plt.show()
     plt.close()
     
     
     
-def graficarHorasMaxMin(valor,data,titulo,fechas):
+def graficar_horas_max_min(valor,data,titulo,fechas):
     ''' grafica las horas donde se dan los maximos y minimos de un valor 
     resultado en graficos/max-min '''
     
@@ -273,9 +271,9 @@ def graficarHorasMaxMin(valor,data,titulo,fechas):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
         
-    filenameResult =os.path.join(DIRECTORIO_BASE, 'graficos', 'max_min', "{}_{}.png".format(valor,titulo))
-    print("generando grafico horas... {}".format(filenameResult)) 
-    plt.savefig(filenameResult)   # save the figure to file    
+    filename_result =os.path.join(DIRECTORIO_BASE, 'graficos', 'max_min', "{}_{}.png".format(valor,titulo))
+    print("generando grafico horas... {}".format(filename_result)) 
+    plt.savefig(filename_result)   # save the figure to file    
     # plt.show()
     plt.close()
 
@@ -283,7 +281,7 @@ def graficarHorasMaxMin(valor,data,titulo,fechas):
     
     
 
-def graficarMejorHora(data):
+def graficar_mejor_hora(data):
     
     
     configuracion = 'configuracion.cfg'
@@ -310,45 +308,45 @@ def graficarMejorHora(data):
     plt.ylabel('variacion de pips')
 
     
-    filenameResult =os.path.join(DIRECTORIO_BASE, 'graficos', 'horas', "{}.png".format(data[0][0]))
-    print("generando grafico horas... {}".format(filenameResult)) 
-    plt.savefig(filenameResult)   # save the figure to file
+    filename_result =os.path.join(DIRECTORIO_BASE, 'graficos', 'horas', "{}.png".format(data[0][0]))
+    print("generando grafico horas... {}".format(filename_result)) 
+    plt.savefig(filename_result)   # save the figure to file
     plt.close()
 
     
     
-def graficarValor(VALOR, TEMPORALIDAD, tiempo = None, media = None):
+def graficar_valor(valor, temporalidad, tiempo = None, media = None):
     ''' graficos de las valores
     resultado en /graficos/valores'''
     
-    if TEMPORALIDAD=='D':
+    if temporalidad=='D':
         if tiempo is None:
             tiempo = 10 
         if media=='mejor':
-            media = fd.getMejorMedia(VALOR, 'D')
+            media = fd.getMejorMedia(valor, 'D')
        
-        graficarValorDiario(VALOR, tiempo, media)
+        graficar_valor_diario(valor, tiempo, media)
             
     
-    elif TEMPORALIDAD=='60': 
+    elif temporalidad=='60': 
         if media=='mejor':
-            media = fd.getMejorMedia(VALOR, '60')
+            media = fd.getMejorMedia(valor, '60')
         
-        graficarValorHorario(VALOR, tiempo, media)
+        graficar_valor_horario(valor, tiempo, media)
         
         
         
-    elif TEMPORALIDAD=='W': 
+    elif temporalidad=='W': 
         if media=='mejor':
-            media = fd.getMejorMedia(VALOR, 'W')
+            media = fd.getMejorMedia(valor, 'W')
         if tiempo is not None:
-            graficarValorSemanal(VALOR, tiempo, media)
+            graficar_valor_semanal(valor, tiempo, media)
         else:
-            graficarValorSemanal(VALOR, 3, media)
+            graficar_valor_semanal(valor, 3, media)
 
 
 
-def graficarValorHorario(VALOR, dias = None, media = None):
+def graficar_valor_horario(valor, dias = None, media = None):
 
     TEMPORALIDAD = '60'
     configuracion = 'configuracion.cfg'
@@ -357,12 +355,12 @@ def graficarValorHorario(VALOR, dias = None, media = None):
     config.read(configuracion)
     DIRECTORIO_BASE = config.get('data', 'directorio_base')
     
-    filename = os.path.join(DIRECTORIO_BASE,'csv',TEMPORALIDAD,"{}.csv".format(VALOR))
+    filename = os.path.join(DIRECTORIO_BASE,'csv',TEMPORALIDAD,"{}.csv".format(valor))
     
     
     # every monday
     horas = HourLocator(byhour=range(0,24,4)) # cada 4 horas
-    daysFmt = DateFormatter("%d %b %y %H:%M")
+    days_fmt = DateFormatter("%d %b %y %H:%M")
 
 
     quotes = pd.read_csv(filename,
@@ -386,7 +384,7 @@ def graficarValorHorario(VALOR, dias = None, media = None):
     date1 = date1.strftime("%Y-%m-%d %H:%M")
     date2 = date2.strftime("%Y-%m-%d %H:%M")
     
-    titulo = "{} ( {} ) De {} a {}".format(VALOR,TEMPORALIDAD,date1,date2)
+    titulo = "{} ( {} ) De {} a {}".format(valor,TEMPORALIDAD,date1,date2)
 
     
     if media is not None:
@@ -463,25 +461,25 @@ def graficarValorHorario(VALOR, dias = None, media = None):
 
     
     ax1.xaxis.set_major_locator(horas)
-    ax1.xaxis.set_major_formatter(daysFmt)    
+    ax1.xaxis.set_major_formatter(days_fmt)    
     ax1.autoscale_view()
     ax1.xaxis.grid(True, 'major')
     ax1.grid(True)    
 
     ax2.xaxis.set_major_locator(horas)
-    ax2.xaxis.set_major_formatter(daysFmt)    
+    ax2.xaxis.set_major_formatter(days_fmt)    
     ax2.autoscale_view()
     ax2.xaxis.grid(True, 'major')
     ax2.grid(True)
        
     ax3.xaxis.set_major_locator(horas)
-    ax3.xaxis.set_major_formatter(daysFmt)    
+    ax3.xaxis.set_major_formatter(days_fmt)    
     ax3.autoscale_view()
     ax3.xaxis.grid(True, 'major')
     ax3.grid(True)   
 
     ax4.xaxis.set_major_locator(horas)
-    ax4.xaxis.set_major_formatter(daysFmt)    
+    ax4.xaxis.set_major_formatter(days_fmt)    
     ax4.autoscale_view()
     ax4.xaxis.grid(True, 'major')
     ax4.grid(True)
@@ -490,15 +488,15 @@ def graficarValorHorario(VALOR, dias = None, media = None):
     fig.autofmt_xdate()
 
 
-    filenameResult = directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'valores', TEMPORALIDAD, "{}.png".format(VALOR))
+    filename_result = directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'valores', TEMPORALIDAD, "{}.png".format(valor))
       
-    print("generando.... {}".format(filenameResult)) 
-    plt.savefig(filenameResult)   # save the figure to file
+    print("generando.... {}".format(filename_result)) 
+    plt.savefig(filename_result)   # save the figure to file
     # plt.show()
     plt.close()
 
 
-def graficarValorSemanal(VALOR, annos = 3,  media = None):
+def graficar_valor_semanal(valor, annos = 3,  media = None):
 
     TEMPORALIDAD = 'W'
     configuracion = 'configuracion.cfg'
@@ -507,12 +505,12 @@ def graficarValorSemanal(VALOR, annos = 3,  media = None):
     config.read(configuracion)
     DIRECTORIO_BASE = config.get('data', 'directorio_base')
     
-    filename = os.path.join(DIRECTORIO_BASE,'csv',TEMPORALIDAD,"{}.csv".format(VALOR))
+    filename = os.path.join(DIRECTORIO_BASE,'csv',TEMPORALIDAD,"{}.csv".format(valor))
     
     
     # every monday
     mondays = MonthLocator()
-    daysFmt = DateFormatter("%d %b %y")
+    days_fmt = DateFormatter("%d %b %y")
 
 
     quotes = pd.read_csv(filename,
@@ -544,7 +542,7 @@ def graficarValorSemanal(VALOR, annos = 3,  media = None):
         quotes = quotes[(quotes.index > f) & (quotes.index <= date2)]
         date1 = f.strftime("%Y-%m-%d %H:%M")
     
-    titulo = "{} ( {} ) De {} a {}".format(VALOR,TEMPORALIDAD,date1,date2)
+    titulo = "{} ( {} ) De {} a {}".format(valor,TEMPORALIDAD,date1,date2)
     directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos')    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
@@ -614,25 +612,25 @@ def graficarValorSemanal(VALOR, annos = 3,  media = None):
 
     
     ax1.xaxis.set_major_locator(mondays)
-    ax1.xaxis.set_major_formatter(daysFmt)    
+    ax1.xaxis.set_major_formatter(days_fmt)    
     ax1.autoscale_view()
     ax1.xaxis.grid(True, 'major')
     ax1.grid(True)    
 
     ax2.xaxis.set_major_locator(mondays)
-    ax2.xaxis.set_major_formatter(daysFmt)    
+    ax2.xaxis.set_major_formatter(days_fmt)    
     ax2.autoscale_view()
     ax2.xaxis.grid(True, 'major')
     ax2.grid(True)
        
     ax3.xaxis.set_major_locator(mondays)
-    ax3.xaxis.set_major_formatter(daysFmt)    
+    ax3.xaxis.set_major_formatter(days_fmt)    
     ax3.autoscale_view()
     ax3.xaxis.grid(True, 'major')
     ax3.grid(True)   
 
     ax4.xaxis.set_major_locator(mondays)
-    ax4.xaxis.set_major_formatter(daysFmt)    
+    ax4.xaxis.set_major_formatter(days_fmt)    
     ax4.autoscale_view()
     ax4.xaxis.grid(True, 'major')
     ax4.grid(True)
@@ -641,30 +639,30 @@ def graficarValorSemanal(VALOR, annos = 3,  media = None):
     fig.autofmt_xdate()
 
 
-    filenameResult = directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'valores', TEMPORALIDAD, "{}.png".format(VALOR))
+    filename_result = directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'valores', TEMPORALIDAD, "{}.png".format(valor))
       
-    print("generando.... {}".format(filenameResult)) 
-    plt.savefig(filenameResult)   # save the figure to file
+    print("generando.... {}".format(filename_result)) 
+    plt.savefig(filename_result)   # save the figure to file
     # plt.show()
     plt.close()
     
     
 
-def graficarValorDiario(VALOR, meses = 12,  media = None):
+def graficar_valor_diario(valor, meses = 12,  media = None):
 
-    TEMPORALIDAD = 'D'
+    temporalidad = 'D'
     configuracion = 'configuracion.cfg'
     # LECTURA DE VALORES DE CONFIGURACION
     config = ConfigParser.ConfigParser()
     config.read(configuracion)
     DIRECTORIO_BASE = config.get('data', 'directorio_base')
     
-    filename = os.path.join(DIRECTORIO_BASE,'csv',TEMPORALIDAD,"{}.csv".format(VALOR))
+    filename = os.path.join(DIRECTORIO_BASE,'csv',temporalidad,"{}.csv".format(valor))
     
     
     # every monday
     mondays = WeekdayLocator(MONDAY)
-    daysFmt = DateFormatter("%d %b %y")
+    days_fmt = DateFormatter("%d %b %y")
 
 
     quotes = pd.read_csv(filename,
@@ -684,7 +682,7 @@ def graficarValorDiario(VALOR, meses = 12,  media = None):
     date1 = date1.strftime("%Y-%m-%d %H:%M")
     date2 = date2.strftime("%Y-%m-%d %H:%M")
     
-    titulo = "{} ( {} ) De {} a {}".format(VALOR,TEMPORALIDAD,date1,date2)
+    titulo = "{} ( {} ) De {} a {}".format(valor,temporalidad,date1,date2)
     
 
     quotes = quotes[(quotes.index >= date1) & (quotes.index <= date2)]
@@ -702,7 +700,7 @@ def graficarValorDiario(VALOR, meses = 12,  media = None):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))        
     
-    directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'valores', TEMPORALIDAD)    
+    directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'valores', temporalidad)    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
@@ -761,25 +759,25 @@ def graficarValorDiario(VALOR, meses = 12,  media = None):
 
     
     ax1.xaxis.set_major_locator(mondays)
-    ax1.xaxis.set_major_formatter(daysFmt)    
+    ax1.xaxis.set_major_formatter(days_fmt)    
     ax1.autoscale_view()
     ax1.xaxis.grid(True, 'major')
     ax1.grid(True)    
 
     ax2.xaxis.set_major_locator(mondays)
-    ax2.xaxis.set_major_formatter(daysFmt)    
+    ax2.xaxis.set_major_formatter(days_fmt)    
     ax2.autoscale_view()
     ax2.xaxis.grid(True, 'major')
     ax2.grid(True)
        
     ax3.xaxis.set_major_locator(mondays)
-    ax3.xaxis.set_major_formatter(daysFmt)    
+    ax3.xaxis.set_major_formatter(days_fmt)    
     ax3.autoscale_view()
     ax3.xaxis.grid(True, 'major')
     ax3.grid(True)   
 
     ax4.xaxis.set_major_locator(mondays)
-    ax4.xaxis.set_major_formatter(daysFmt)    
+    ax4.xaxis.set_major_formatter(days_fmt)    
     ax4.autoscale_view()
     ax4.xaxis.grid(True, 'major')
     ax4.grid(True)
@@ -788,19 +786,19 @@ def graficarValorDiario(VALOR, meses = 12,  media = None):
     fig.autofmt_xdate()
 
 
-    filenameResult = directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'valores', TEMPORALIDAD, "{}.png".format(VALOR))
+    filename_result = directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'valores', temporalidad, "{}.png".format(valor))
       
-    print("generando.... {}".format(filenameResult)) 
-    plt.savefig(filenameResult)   # save the figure to file
+    print("generando.... {}".format(filename_result)) 
+    plt.savefig(filename_result)   # save the figure to file
     # plt.show()
     plt.close()
 
 
-def graficoCorrelacion(VALORES, DIRECTORIO_BASE, TEMPORALIDAD, filename, meses = 12):
+def grafico_correlacion(valores, directorio_base, temporalidad, filename, meses = 12):
     
     # every monday
     mondays = MonthLocator()
-    daysFmt = DateFormatter("%d %b %y")
+    days_fmt = DateFormatter("%d %b %y")
 
 
     quotes = pd.read_csv(filename,
@@ -817,21 +815,21 @@ def graficoCorrelacion(VALORES, DIRECTORIO_BASE, TEMPORALIDAD, filename, meses =
     date1 = date1.strftime("%Y-%m-%d %H:%M")
     date2 = date2.strftime("%Y-%m-%d %H:%M")
     
-    titulo = "{} - {} ( {} ) De {} a {}".format(VALORES[0],VALORES[1],TEMPORALIDAD,date1,date2)
+    titulo = "{} - {} ( {} ) De {} a {}".format(valores[0],valores[1],temporalidad,date1,date2)
     
     quotes = quotes[(quotes.index >= date1) & (quotes.index <= date2)]
 
-    directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos')    
+    directorio_destino = os.path.join(directorio_base, 'graficos')    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
 
-    directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'pares')    
+    directorio_destino = os.path.join(directorio_base, 'graficos', 'pares')    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))        
     
-    directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'pares', TEMPORALIDAD)    
+    directorio_destino = os.path.join(directorio_base, 'graficos', 'pares', temporalidad)    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
@@ -884,25 +882,25 @@ def graficoCorrelacion(VALORES, DIRECTORIO_BASE, TEMPORALIDAD, filename, meses =
 
     
     ax1.xaxis.set_major_locator(mondays)
-    ax1.xaxis.set_major_formatter(daysFmt)    
+    ax1.xaxis.set_major_formatter(days_fmt)    
     ax1.autoscale_view()
     ax1.xaxis.grid(True, 'major')
     ax1.grid(True)    
 
     ax2.xaxis.set_major_locator(mondays)
-    ax2.xaxis.set_major_formatter(daysFmt)    
+    ax2.xaxis.set_major_formatter(days_fmt)    
     ax2.autoscale_view()
     ax2.xaxis.grid(True, 'major')
     ax2.grid(True)
        
     ax3.xaxis.set_major_locator(mondays)
-    ax3.xaxis.set_major_formatter(daysFmt)    
+    ax3.xaxis.set_major_formatter(days_fmt)    
     ax3.autoscale_view()
     ax3.xaxis.grid(True, 'major')
     ax3.grid(True)   
 
     ax4.xaxis.set_major_locator(mondays)
-    ax4.xaxis.set_major_formatter(daysFmt)    
+    ax4.xaxis.set_major_formatter(days_fmt)    
     ax4.autoscale_view()
     ax4.xaxis.grid(True, 'major')
     ax4.grid(True)
@@ -913,11 +911,11 @@ def graficoCorrelacion(VALORES, DIRECTORIO_BASE, TEMPORALIDAD, filename, meses =
 
     
     
-    valor1,valor2 = VALORES
-    filenameResult = directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'pares', TEMPORALIDAD, "{}-{}.png".format(valor1,valor2))
+    valor1,valor2 = valores
+    filename_result = directorio_destino = os.path.join(directorio_base, 'graficos', 'pares', temporalidad, "{}-{}.png".format(valor1,valor2))
       
-    print("generando.... {}".format(filenameResult)) 
-    plt.savefig(filenameResult)   # save the figure to file
+    print("generando.... {}".format(filename_result)) 
+    plt.savefig(filename_result)   # save the figure to file
     # plt.show()
     plt.close()
     
@@ -925,37 +923,37 @@ def graficoCorrelacion(VALORES, DIRECTORIO_BASE, TEMPORALIDAD, filename, meses =
     
     
     
-def combinarValores(VALORES,TEMPORALIDAD, MESES=12):
+def combinar_valores(valores,temporalidad, meses=12):
     ''' combina pares de valores y deja el resultado en /csv/pares/
     graficos de correlacion en /graficos/pares '''
     
     configuracion = 'configuracion.cfg'
-    # LECTURA DE VALORES DE CONFIGURACION
+    # LECTURA DE valores DE CONFIGURACION
     config = ConfigParser.ConfigParser()
     config.read(configuracion)
     DIRECTORIO_BASE = config.get('data', 'directorio_base')
     
     
-    fname1,fname2 = VALORES
-    filename1 = os.path.join(DIRECTORIO_BASE, 'csv', TEMPORALIDAD, fname1 + '.csv')
-    filename2 = os.path.join(DIRECTORIO_BASE, 'csv', TEMPORALIDAD, fname2 + '.csv')        
+    fname1,fname2 = valores
+    filename1 = os.path.join(DIRECTORIO_BASE, 'csv', temporalidad, fname1 + '.csv')
+    filename2 = os.path.join(DIRECTORIO_BASE, 'csv', temporalidad, fname2 + '.csv')        
     
-    dirFilenameResult = os.path.join(DIRECTORIO_BASE, 'csv', 'pares')
-    if not os.path.exists(dirFilenameResult):
-        os.makedirs(dirFilenameResult)
-        print ("creando directorio.... {}".format(dirFilenameResult))
+    dir_filename_result = os.path.join(DIRECTORIO_BASE, 'csv', 'pares')
+    if not os.path.exists(dir_filename_result):
+        os.makedirs(dir_filename_result)
+        print ("creando directorio.... {}".format(dir_filename_result))
         
-    dirFilenameResult = os.path.join(DIRECTORIO_BASE, 'csv', 'pares', TEMPORALIDAD)
-    if not os.path.exists(dirFilenameResult):
-        os.makedirs(dirFilenameResult)
-        print ("creando directorio.... {}".format(dirFilenameResult))
+    dir_filename_result = os.path.join(DIRECTORIO_BASE, 'csv', 'pares', temporalidad)
+    if not os.path.exists(dir_filename_result):
+        os.makedirs(dir_filename_result)
+        print ("creando directorio.... {}".format(dir_filename_result))
     
-    dirFilenameResult = os.path.join(DIRECTORIO_BASE, 'csv', 'pares', TEMPORALIDAD)
-    if not os.path.exists(dirFilenameResult):
-        os.makedirs(dirFilenameResult)
-        print ("creando directorio.... {}".format(dirFilenameResult))
+    dir_filename_result = os.path.join(DIRECTORIO_BASE, 'csv', 'pares', temporalidad)
+    if not os.path.exists(dir_filename_result):
+        os.makedirs(dir_filename_result)
+        print ("creando directorio.... {}".format(dir_filename_result))
         
-    filename3 = os.path.join(DIRECTORIO_BASE, 'csv', 'pares', TEMPORALIDAD, "{}-{}.csv".format(fname1,fname2))   
+    filename3 = os.path.join(DIRECTORIO_BASE, 'csv', 'pares', temporalidad, "{}-{}.csv".format(fname1,fname2))   
 
     file_1 = pd.read_csv(filename1,
                         index_col=0,
@@ -1031,4 +1029,4 @@ def combinarValores(VALORES,TEMPORALIDAD, MESES=12):
                 
 
 
-    graficoCorrelacion(VALORES, DIRECTORIO_BASE, TEMPORALIDAD, filename3, MESES)
+    grafico_correlacion(valores, DIRECTORIO_BASE, temporalidad, filename3, meses)

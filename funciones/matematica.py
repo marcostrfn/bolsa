@@ -4,7 +4,7 @@
 import math
 
 
-def calcularPorcentaje(lista):
+def calcular_porcentaje(lista):
     porcentajes = [((b-a)*100/a) for a,b in zip(lista,lista[1:])]
     return porcentajes
    
@@ -54,9 +54,11 @@ def covarianza(datax,datay):
 	
 	return covarianza
 	
+    
 def cov(datax,datay):
 	return covarianza(datax,datay) / varianza(datay)
 	
+    
 def rendimiento(datax,periodo=250):
 	precio_inicial_accion = datax[-periodo]
 	precio_final_accion = datax[-1]
@@ -64,6 +66,7 @@ def rendimiento(datax,periodo=250):
 	
 	return rendimiento_accion
 	
+    
 def beta(datax,datay,rendimiento_bono,periodo=250):
 	# https://www.datosmacro.com/bono/usa 
 	rendimiento_accion = rendimiento(datax, periodo)

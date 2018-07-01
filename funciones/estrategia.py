@@ -15,8 +15,6 @@ def sar_parabolico(valor, tiempo, tipo, data, parabolic_sar_bull):
 	l,c = fb.get_simulacion_importes(data,largos,cortos)	
 	imp_l = fb.sumar_importes(l)
 	imp_c = fb.sumar_importes(c)
-	total = imp_l + imp_c
-	# importes_operaciones = (imp_l + imp_c, imp_l, imp_c)
 
 	return (valor, tiempo, tipo, titulo, 0, numero_operaciones, imp_l + imp_c, imp_l, imp_c)
 
@@ -33,8 +31,6 @@ def macd(valor, tiempo, tipo, data):
 	l,c = fb.get_simulacion_importes(data,largos,cortos)	
 	imp_l = fb.sumar_importes(l)
 	imp_c = fb.sumar_importes(c)
-	total = imp_l + imp_c
-	# importes_operaciones = (imp_l + imp_c, imp_l, imp_c)
 	
 	return (valor, tiempo, tipo, titulo, 0, numero_operaciones, imp_l + imp_c, imp_l, imp_c)
 

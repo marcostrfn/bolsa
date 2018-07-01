@@ -112,10 +112,7 @@ def procesar_valores_flujo(valor, tiempo, tipo, data, config):
 		h = hora		
 		datetime_fecha = datetime.strptime(data['fecha'][d], '%Y-%m-%d %H:%M')
 		
-		if datetime_fecha.weekday() > 3:
-			pass
-		else:
-			# print (data['fecha'][d], datetime_fecha.weekday() )
+		if not datetime_fecha.weekday() > 3:
 			resultados[h].append( (data['fecha'][d], data['open'][d], data['close'][d]) )
 		
 
@@ -125,8 +122,6 @@ def procesar_valores_flujo(valor, tiempo, tipo, data, config):
 	
 def procesar_valores(valor, tiempo, tipo, data, config):
 	
-
-	pivot = calcular_pivot_fibo(data['close'], data['high'], data['low'])
 	parabolic_sar_bear, parabolic_sar_bull = psar(data['fecha'], data['close'], data['high'], data['low'], 0.02, 0.2)
 
 	resultados = []
@@ -456,7 +451,6 @@ def psar(dates, close, high, low, iaf = 0.02, maxaf = 0.2):
 	psarbear = [0] * length
 	bull = True
 	af = iaf
-	ep = low[0]
 	hp = high[0]
 	lp = low[0]
 	
@@ -508,7 +502,6 @@ def psar(dates, close, high, low, iaf = 0.02, maxaf = 0.2):
 			psarbear[i] = psar[i]
 
 	
-	# return {"dates":dates, "high":high, "low":low, "close":close, "psar":psar, "psarbear":psarbear, "psarbull":psarbull}
 	return (psarbear, psarbull)
 	
 
@@ -570,9 +563,7 @@ def get_pares_corte(cruces):
 def get_simulacion_importes(data,largos,cortos):
 	''' devuelve un array con fecha inicio, fin, e importe 
 		de las operaciones ('2018-02-14', '2018-02-27', 99.0),'''
-		
-	importe_largos = 0
-
+	
 	array_largos = []
 	for valor in largos:
 		inicio,final = valor
@@ -583,9 +574,6 @@ def get_simulacion_importes(data,largos,cortos):
 		precio_cerrar = data['close'][final]	
 		importe_operacion = precio_cerrar - precio_abrir
 		array_largos.append((data['fecha'][inicio], data['fecha'][final],importe_operacion))
-		
-		
-		
 		
 	array_cortos = []
 	for valor in cortos:
@@ -654,9 +642,7 @@ def cruce_precio_sma(array_sma, array_fecha, array_apertura, array_cierre):
 		
 		for x in range(1,len(cortes)):
 			anterior = x - 1
-			if cortes[x][1][-1:]==cortes[anterior][1][-1:]:
-				pass
-			else:
+			if not cortes[x][1][-1:]==cortes[anterior][1][-1:]:
 				cortes_final.append(cortes[x])
 			
 		if len(cortes_final)>1:
@@ -674,7 +660,6 @@ def get_operaciones_sma_exp200(periodo_desde, periodo_hasta, fecha, apertura, ci
 	#calcula cruce de medias simple de periodo_desde hasta periodo_hasta y exponencial de 200
 	for periodo in range(periodo_desde,periodo_hasta):
 		print (periodo)
-		# ema[periodo] = get_ema_periodo(periodo,cierre)
 		array_sma = get_sma_periodo(periodo,cierre)
 		cortes = cruce_precio_sma(array_sma, fecha, apertura, cierre)
 		for corte in cortes:
@@ -695,7 +680,6 @@ def get_operaciones_sma(periodo_desde, periodo_hasta, fecha, apertura, cierre):
 	#calcula cruce de medias simple de periodo_desde hasta periodo_hasta y exponencial de 200
 	for periodo in range(periodo_desde,periodo_hasta):
 		print (periodo)
-		# ema[periodo] = get_ema_periodo(periodo,cierre)
 		array_sma = get_sma_periodo(periodo,cierre)
 		cortes = cruce_precio_sma(array_sma, fecha, apertura, cierre)
 		for corte in cortes:
@@ -745,16 +729,12 @@ def get_cruce_medias(array_1, array_2, valor):
 		
 		if b2 > b1+1:
 			cortes[resultado[posicion_corte]]=valor
-			# print ('----', fecha[resultado[posicion_corte]], posicion_corte, resultado[posicion_corte])
 			posicion_corte = x+1
 
 		x += 1
 		if x == len(resultado) - 1: 
 			cortes[resultado[posicion_corte]]=valor
-			# print ('----', fecha[resultado[posicion_corte]], posicion_corte, resultado[posicion_corte])
 			break
-	
-	# sys.exit()
 	
 	return cortes
 	
@@ -774,7 +754,6 @@ def get_cruce_simple(array_1):
 		
 		if not b2 == b1:
 			array_cortes.append((posicion_corte, resultado[posicion_corte]))
-			# print ('----', posicion_corte, resultado[posicion_corte])
 			posicion_corte = x+1
 
 		x += 1
@@ -794,8 +773,7 @@ def combinar_entradas(array_entrada_1, array_entrada_2):
 	for x in range(0,len(array_entrada_1)):
 		if array_entrada_1[x] is not None:
 			result[x] = array_entrada_1[x]
-		else:
-			if array_entrada_2[x] is not None:
+		elif array_entrada_2[x] is not None:
 				result[x] = array_entrada_2[x]
 	
 	return result

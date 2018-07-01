@@ -11,7 +11,7 @@ import funciones.data as fd
 import funciones.bolsa as fb
 
 
-def mediaDorada(cierre, sma50, sma200):
+def media_dorada(cierre, sma50, sma200):
     media_50 = []
     media_200 = []
     media = []
@@ -32,17 +32,17 @@ if __name__ == '__main__':
     config = ConfigParser.ConfigParser()
     config.read(configuracion)
     directorio_base = config.get('data', 'directorio_base')
-    PROCESAR = config.get('calculo', 'PROCESAR').split(',')
+    procesar = config.get('calculo', 'procesar').split(',')
     
-    PERIODO = 'D'
+    periodo = 'D'
     
-    for VALOR in PROCESAR:
+    for valor in procesar:
         
         
-        data = fd.cargar_datos_valor(VALOR, PERIODO)
+        data = fd.cargar_datos_valor(valor, periodo)
         
         # print (data['close'])
-        dorada = mediaDorada(data['close'],data['sma50'],data['sma200'])
+        dorada = media_dorada(data['close'],data['sma50'],data['sma200'])
         
         pivot_point = fb.calcular_pivot_fibo(data['close'], data['high'], data['low'])
         
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
 
             if accion is not None:
-                print (VALOR, data['fecha'][d], dorada[d], data['rsi14'][d], data['close'][d], accion)
+                print (valor, data['fecha'][d], dorada[d], data['rsi14'][d], data['close'][d], accion)
                            
                     
         sys.exit()

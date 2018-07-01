@@ -14,7 +14,7 @@ if __name__ == '__main__':
 	deja el resultado en fichero result/pivot.csv
 	Lee los valores de fichero de configuración tag calculo'''
 	
-	fd.calculoSoportesResistencias()
+	fd.calculo_soportes_resistencias()
 	
 	
 				

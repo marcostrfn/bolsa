@@ -10,4 +10,4 @@ if __name__ == '__main__':
     pivot y mejores horas de trading.
     resultado en pdf en /graficos/valores/reporte'''
     
-    fr.crearReporte()
+    fr.crear_reporte()
