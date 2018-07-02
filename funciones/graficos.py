@@ -6,7 +6,7 @@ import csv
 import sys
 import os
 import shutil
-import ConfigParser
+# import ConfigParser
 
 import matplotlib.pyplot as plt
 from pylab import *
@@ -16,8 +16,6 @@ from matplotlib.dates import (MONDAY, DateFormatter, MonthLocator,
                               WeekdayLocator, HourLocator, date2num, num2date)
 
 from mpl_finance import plot_day_summary_oclh
-
-
 import dateutil.relativedelta
 from datetime import datetime, timedelta
 
@@ -28,7 +26,7 @@ from matplotlib import _mathtext_data
 
 
 
-def crear_directorio(directorio):
+def crear_directorio(directorio_destino):
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))    

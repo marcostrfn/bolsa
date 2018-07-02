@@ -20,11 +20,11 @@ from reportlab.lib.enums import TA_CENTER
 from pyPdf import PdfFileWriter, PdfFileReader
 import StringIO
 import datetime
-import ConfigParser
+# import ConfigParser
 
 
 
-def crear_directorio(directorio):
+def crear_directorio(directorio_destino):
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))   

@@ -3,18 +3,19 @@
 
 from __future__ import print_function
 from datetime import datetime, timedelta
+from time import mktime
 import urllib
 import json
 import os
 import ssl
 import csv
-import ConfigParser
+# import ConfigParser
 import itertools
 import bolsa as fb
 import graficos as fg
 
 
-def crear_directorio(directorio):
+def crear_directorio(directorio_destino):
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))  
