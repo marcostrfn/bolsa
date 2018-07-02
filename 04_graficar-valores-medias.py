@@ -3,10 +3,6 @@
 
 
 import funciones.graficos as fg
-import itertools
-import ConfigParser
-import sys
-
 from clases.Configuracion import Configuracion, CsvData
 
 if __name__ == '__main__':      

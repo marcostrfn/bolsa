@@ -4,12 +4,134 @@
 from __future__ import print_function
 from datetime import datetime, timedelta
 from time import mktime
-import urllib, json, os
-import ssl, csv
+import urllib
+import json
+import os
+import ssl
+import csv
 import ConfigParser
-
+import itertools
 import bolsa as fb
 import graficos as fg
+
+
+
+# graficar maximo minimos
+def graficar_maximos_minimos(obj_config):
+	
+	valores_a_procesar = obj_config.get_valores_calculo()
+	valores = obj_csv.get_valores_by_valor(valores_a_procesar)	
+	resultados = []	
+	for row_valor in valores:
+		valor = row_valor[0]	 
+		horas_maximo = [0] * 24
+		horas_minimo = [0] * 24					 
+		fechaDesde = 0
+		fechaHasta = 0
+			
+		data = fd.cargar_valores(obj_config, valor, '60')
+					  
+		fecha = data['fecha'][0].split(' ')   
+		dia_old = fecha[0]		   
+		fechaDesde = dia_old
+			
+		maximo_high = 0
+		maximo_low = 100000
+		valores_diarios = []
+		for i in range (1,len(data['fecha'])):
+				
+			fecha = data['fecha'][i].split(' ')
+			dia = fecha[0]
+			hora = fecha[1].split(':')
+			  
+			if hora[0] in ['23','00','01','02','03','04','05','06','07']: continue
+				
+			if dia == dia_old:
+				open = data['open'][i]
+				close = data['close'][i]
+				high = data['high'][i]
+				low = data['low'][i]
+					
+				if high > maximo_high: maximo_high = high
+				if low < maximo_low: maximo_low = low
+				valores_diarios.append((dia, hora[0], maximo_high, maximo_low))  
+
+			else:
+					
+				maximo_dia = 0
+				minimo_dia = 100000
+				hora_dia_maximo = None
+				hora_dia_minimo = None					
+				dia_dia_maximo = None
+				dia_dia_minimo = None
+				for a in valores_diarios:
+					dDia, dHora, d_maximo_high, d_maximo_low = a
+					if d_maximo_high > maximo_dia: 
+						maximo_dia = d_maximo_high
+						hora_dia_maximo = dHora
+						dia_dia_maximo = dDia
+					if d_maximo_low < minimo_dia: 
+						minimo_dia = d_maximo_low
+						hora_dia_minimo = dHora
+						dia_dia_minimo = dDia
+
+				try:
+					horas_maximo[int(hora_dia_maximo)] += 1
+					horas_minimo[int(hora_dia_minimo)] += 1
+				except Exception:
+					print (Exception)
+						
+				valores_diarios = []
+						   
+				maximo_high = 0
+				maximo_low = 100000
+				dia_old = dia
+					
+				open = data['open'][i]
+				close = data['close'][i]
+				high = data['high'][i]
+				low = data['low'][i]
+					
+				if high > maximo_high: maximo_high = high
+				if low < maximo_low: maximo_low = low
+					
+				valores_diarios.append((dia, hora[0], maximo_high, maximo_low)) 
+				fechaHasta = dia
+					
+		fechas = "de {} a {}".format(fechaDesde,fechaHasta)
+		fg.graficar_horas_max_min(obj_config, valor, horas_maximo,'maximos',fechas)
+		fg.graficar_horas_max_min(obj_config, valor,horas_minimo,'minimos',fechas)	
+
+# graficar valores
+def graficar_valores(obj_config):
+	
+	directorio_base = obj_config.get_directorio_base()
+	procesar = obj_config.get_valores_calculo()
+	
+	for valor in procesar:
+		fg.graficar_valor(obj_config, valor, 'D', media='mejor')
+		fg.graficar_valor(obj_config, valor, '60', media='mejor')
+		fg.graficar_valor(obj_config, valor, 'W', media='mejor')
+		
+		
+		
+def graficar_valores_pares(obj_config):
+	
+	directorio_base = obj_config.get_directorio_base()
+	procesar = obj_config.get_valores_calculo()
+
+	C = itertools.permutations(procesar, 2)
+	tramitado = []
+	for valores in C:
+		if valores[1] in tramitado:
+			print ("excluir combinacion {}".format(valores))
+		else:
+			print ("combinar {}".format(valores))
+			fg.combinar_valores(obj_config, valores,'D',24)
+		
+		if not valores[0] in tramitado:
+			tramitado.append(valores[0]) 
+		
 
 
 # descarga_datos

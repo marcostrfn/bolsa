@@ -30,16 +30,14 @@ from matplotlib import _mathtext_data
 
 
 
-def limpiar_graficas():
+def limpiar_graficas(obj_config):
     ''' limpia graficos de la carpeta /graficos/ y deja backup en
     carpeta backup'''
     
     carpeta_backup = 'graficos'
     exclude_carpeta = ['reporte']
     
-    config = ConfigParser.ConfigParser()
-    config.read('configuracion.cfg')
-    directorio_base = config.get('data', 'directorio_base')
+    directorio_base = obj_config.get('data', 'directorio_base')
     
     directorio_destino = os.path.join(directorio_base, 'backup')
     if not os.path.exists(directorio_destino):
@@ -230,7 +228,7 @@ def grafico_simple(valor,titulo_x,titulo_y,data,tipo="linea"):
     
     
     
-def graficar_horas_max_min(valor,data,titulo,fechas):
+def graficar_horas_max_min(config, valor,data,titulo,fechas):
     ''' grafica las horas donde se dan los maximos y minimos de un valor 
     resultado en graficos/max-min '''
     
@@ -238,9 +236,7 @@ def graficar_horas_max_min(valor,data,titulo,fechas):
     horas = ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23']
     configuracion = 'configuracion.cfg'
     # LECTURA DE VALORES DE CONFIGURACION
-    config = ConfigParser.ConfigParser()
-    config.read(configuracion)
-    DIRECTORIO_BASE = config.get('data', 'directorio_base')
+    directorio_base = config.get('data', 'directorio_base')
             
 
     plt.axes()  # Definimos la posicion de los ejes
@@ -249,14 +245,13 @@ def graficar_horas_max_min(valor,data,titulo,fechas):
     plt.xticks(horas, rotation = 45)  # Colocamos las etiquetas del eje x, en este caso, las fechas
     plt.ylabel(titulo)
 
-    
-    
-    directorio_destino = os.path.join(DIRECTORIO_BASE, 'graficos', 'max_min')    
+
+    directorio_destino = os.path.join(directorio_base, 'graficos', 'max_min')    
     if not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
         print ("creando directorio.... {}".format(directorio_destino))
         
-    filename_result =os.path.join(DIRECTORIO_BASE, 'graficos', 'max_min', "{}_{}.png".format(valor,titulo))
+    filename_result =os.path.join(directorio_base, 'graficos', 'max_min', "{}_{}.png".format(valor,titulo))
     print("generando grafico horas... {}".format(filename_result)) 
     plt.savefig(filename_result)   # save the figure to file    
     # plt.show()

@@ -1,12 +1,6 @@
 #! /usr/bin/env/python
 # -*- coding: utf-8 -*-
 
-
-from __future__ import print_function
-
-import os, csv, datetime
-import ConfigParser
-
 import funciones.data as fd
 from clases.Configuracion import Configuracion, CsvData
 

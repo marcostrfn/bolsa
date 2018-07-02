@@ -36,66 +36,10 @@ def add_page_number(canvas, doc):
     
     
 #----------------------------------------------------------------------
-def crea_report(fname, front_cover, back_cover, path, path2, path3, path4, medias, horas, pivot):
-    """"""
-    
-    stylesheet = getSampleStyleSheet()
-    
-    filename = os.path.join(path, fname)
-    doc = SimpleDocTemplate(filename, pagesize=portrait(A4))
-    
-    elements_medias = crear_tabla_medias(path, medias)
-    crear_tabla_horas(path, horas)
-    elements_pivot= crear_tabla_pivot(path, pivot)
-    
-    story=[]
-    
-    width = 7*inch
-    height = 9*inch    
-    
-    path_valores_par = path2
-    path_valores_horas = path4
-    
-    
-    os.chdir(path_valores_par)
-    pictures = []
-    for file in glob.glob("*.png"):
-        pictures.append(os.path.join(path_valores_par,file))
-    
-    os.chdir(path_valores_horas)
-    pictures_mh = []
-    for file in glob.glob("*.png"):
-        pictures_mh.append(os.path.join(path_valores_horas,file))
-        
-    
-    for el in elements_medias:
-        story.append(el)
-        
-    story.append(PageBreak())
-    
-    for el in elements_pivot:
-        story.append(el)
-    
-    story.append(PageBreak())
-    
-    story.append(Paragraph('Mejor horario Trading', stylesheet['Title']))
-    for pic in pictures_mh:
-        story.append(Image(pic, width, height))
-        story.append(PageBreak())  
-    
-    story.append(Paragraph('PARES', stylesheet['Title']))
-    for pic in pictures:
-        story.append(Image(pic, width, height))
-        story.append(PageBreak())
 
-    doc.build(story, onLaterPages=add_page_number)
-    print ("creando {}".format(filename))
-    
 
-def leer_mejores_medias():
+def leer_mejores_medias(config):
     data = []
-    config = ConfigParser.ConfigParser()
-    config.read('configuracion.cfg')
     directorio_base = config.get('data', 'directorio_base')
     
     filename = os.path.join(directorio_base, 'result', 'medias.csv')
@@ -107,10 +51,8 @@ def leer_mejores_medias():
     return data[1:]
 
 
-def leer_mejores_horas():
+def leer_mejores_horas(config):
     data = []
-    config = ConfigParser.ConfigParser()
-    config.read('configuracion.cfg')
     directorio_base = config.get('data', 'directorio_base')
     
     filename = os.path.join(directorio_base, 'result', 'horas.csv')
@@ -121,10 +63,8 @@ def leer_mejores_horas():
     
     return data[1:]
 
-def leer_pivot_point():
+def leer_pivot_point(config):
     data = []
-    config = ConfigParser.ConfigParser()
-    config.read('configuracion.cfg')
     directorio_base = config.get('data', 'directorio_base')
     
     x=0
@@ -148,7 +88,7 @@ def leer_pivot_point():
     return data[1:]
 
 
-def crear_tabla_medias(path, medias):
+def crear_tabla_medias(medias):
     
     stylesheet = getSampleStyleSheet()
 
@@ -163,7 +103,7 @@ def crear_tabla_medias(path, medias):
     numero_columnas = len(medias[0])
     numero_filas = len(medias)
     
-    data= medias
+    data=medias
     t=Table(data,numero_columnas*[1*inch], numero_filas*[0.4*inch])
 
     t.setStyle(TableStyle([('TEXTCOLOR',(0,1),(-1,-1),colors.blue),
@@ -189,7 +129,7 @@ def crear_tabla_medias(path, medias):
     return elements
 
 
-def crear_tabla_horas(path, horas):
+def crear_tabla_horas(horas):
     
     stylesheet = getSampleStyleSheet()
 
@@ -223,7 +163,7 @@ def crear_tabla_horas(path, horas):
     return elements
 
 
-def crear_tabla_pivot(path, data):
+def crear_tabla_pivot( data):
     
     stylesheet = getSampleStyleSheet()
     normal = stylesheet["Normal"]
@@ -272,30 +212,76 @@ def crear_tabla_pivot(path, data):
 
 
 
-def crear_documento(medias,horas,pivot):
+def crea_report(obj_config, medias, horas, pivot):
     
-    path1 = r"C:\tmp\bolsa\graficos\reporte"
-    path2 = r"C:\tmp\bolsa\graficos\pares\D"
-    path3 = r"C:\tmp\bolsa\graficos\valores"
-    path4 = r"C:\tmp\bolsa\graficos\horas"
-
-    front_cover = os.path.join(path1, 'img', "FrontCover.jpg")
-    back_cover = os.path.join(path1, 'img', "BackCover2.jpg")
+    directorio_base = obj_config.get('data', 'directorio_base')
+    
+    directorio_destino = os.path.join(directorio_base, 'graficos', 'reporte')
+    if not os.path.exists(directorio_destino):
+        os.makedirs(directorio_destino)
+        print ("creando directorio.... {}".format(directorio_destino))
+                
     
     ahora = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-    filename = "report_{}.pdf".format(ahora)
+    filename = os.path.join(directorio_base, 'graficos', 'reporte', "report_{}.pdf".format(ahora))
     
-    crea_report(filename, front_cover, back_cover, path1, path2, path3, path4, medias, horas, pivot)
+    stylesheet = getSampleStyleSheet()
+    
+    doc = SimpleDocTemplate(filename, pagesize=portrait(A4))
+    
+    elements_medias = crear_tabla_medias(medias)
+    elements_pivot= crear_tabla_pivot(pivot)
+    
+    story=[]
+    
+    width = 7*inch
+    height = 9*inch    
+    
+    path_valores_par = os.path.join(directorio_base, 'graficos', 'pares', 'D')
+    path_valores_horas = os.path.join(directorio_base, 'graficos', 'horas')
+    
+    
+    os.chdir(path_valores_par)
+    pictures = []
+    for file in glob.glob("*.png"):
+        pictures.append(os.path.join(path_valores_par,file))
+    
+    os.chdir(path_valores_horas)
+    pictures_mh = []
+    for file in glob.glob("*.png"):
+        pictures_mh.append(os.path.join(path_valores_horas,file))
+        
+    
+    for el in elements_medias:
+        story.append(el)        
+    story.append(PageBreak())
+    
+    for el in elements_pivot:
+        story.append(el)
+    story.append(PageBreak())
+    
+    story.append(Paragraph('Mejor horario Trading', stylesheet['Title']))
+    for pic in pictures_mh:
+        story.append(Image(pic, width, height))
+        story.append(PageBreak())  
+    
+    story.append(Paragraph('PARES', stylesheet['Title']))
+    for pic in pictures:
+        story.append(Image(pic, width, height))
+        story.append(PageBreak())
 
-
-def crear_reporte():
+    doc.build(story, onLaterPages=add_page_number)
+    print ("creando {}".format(filename))
+    
+    
+def crear_reporte(obj_config):
     ''' crea un reporte con los graficos de pares, valores
     pivot y mejores horas de trading.
     resultado en pdf en /graficos/valores/reporte'''
     
-    medias = leer_mejores_medias()
-    horas = leer_mejores_horas()
-    pivot = leer_pivot_point()
-    crear_documento(medias,horas,pivot)
+    medias = leer_mejores_medias(obj_config)
+    horas = leer_mejores_horas(obj_config)
+    pivot = leer_pivot_point(obj_config)
+    crea_report(obj_config,medias,horas,pivot)
     
     

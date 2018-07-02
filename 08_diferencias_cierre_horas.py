@@ -12,7 +12,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from array import array
 
-def test_graph(data, valor, hora_inicio, hora_final, hora_destino):
+from clases.Configuracion import Configuracion, CsvData
+
+
+
+def graficar_diferencia_horaria(dir_base, data, valor, hora_inicio, hora_final, hora_destino):
     
     df = pd.DataFrame(data)
     df.columns = ['puntos_inicio','puntos_final']
@@ -65,7 +69,7 @@ def test_graph(data, valor, hora_inicio, hora_final, hora_destino):
 
     
        
-def procesa(dir_base, hora_inicio, hora_final, hora_destino, procesar, filename):
+def procesa_diferencia_horaria(dir_base, hora_inicio, hora_final, hora_destino, procesar, filename):
     
     array_result = []
     
@@ -90,7 +94,7 @@ def procesa(dir_base, hora_inicio, hora_final, hora_destino, procesar, filename)
         dif2 = precio_cierre - precio_apertura
         array_result.append((dif1,dif2))
                     
-    test_graph(array_result, procesar, hora_inicio, hora_final, hora_destino)
+    graficar_diferencia_horaria(dir_base, array_result, procesar, hora_inicio, hora_final, hora_destino)
 
 
 
@@ -100,12 +104,9 @@ if __name__ == '__main__':
     en distintos horarios y deja el resultado en una grafica en
     graficos/comparativaHoraria'''
 
-
-    configuracion = 'configuracion.cfg'
-    # LECTURA DE VALORES DE CONFIGURACION
-    config = ConfigParser.ConfigParser()
-    config.read(configuracion)
-    dir_base = config.get('data', 'directorio_base')
+    obj_csv = CsvData()
+    obj_config = Configuracion()
+    dir_base = obj_config.get_directorio_base()
     
     valores_a_procesar = ['DE30','US500','OIL.WTI','EURUSD']        
 
@@ -121,7 +122,7 @@ if __name__ == '__main__':
     
     for procesar in valores_a_procesar:
         filename = os.path.join(dir_base,'csv','60','{}.csv'.format(procesar))
-        for horas in horas:
-            (hora_inicio,hora_final,hora_destino) = horas     
-            procesa(dir_base, hora_inicio, hora_final, hora_destino, procesar, filename)        
+        for hora in horas:        
+            (hora_inicio,hora_final,hora_destino) = hora     
+            procesa_diferencia_horaria(dir_base, hora_inicio, hora_final, hora_destino, procesar, filename)        
         
