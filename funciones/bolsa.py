@@ -665,11 +665,9 @@ def get_operaciones_sma_exp200(periodo_desde, periodo_hasta, fecha, apertura, ci
 		for corte in cortes:
 			for x in range(0,len(fecha)):
 				if corte[0]==fecha[x]:						
-					if corte[1][-1:]=='A': 
-						if apertura[x]>ema200[x]:
+					if corte[1][-1:]=='A' and apertura[x]>ema200[x]:
 							operaciones.append(('LARGO', corte))	
-					if corte[1][-1:]=='B': 
-						if cierre[x]<ema200[x]:
+					if corte[1][-1:]=='B' and cierre[x]<ema200[x]:
 							operaciones.append(('CORTO', corte))
 	
 	return operaciones
@@ -679,7 +677,6 @@ def get_operaciones_sma(periodo_desde, periodo_hasta, fecha, apertura, cierre):
 	operaciones = []
 	#calcula cruce de medias simple de periodo_desde hasta periodo_hasta y exponencial de 200
 	for periodo in range(periodo_desde,periodo_hasta):
-		print (periodo)
 		array_sma = get_sma_periodo(periodo,cierre)
 		cortes = cruce_precio_sma(array_sma, fecha, apertura, cierre)
 		for corte in cortes:

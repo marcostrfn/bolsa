@@ -28,7 +28,11 @@ from matplotlib import _mathtext_data
 
 
 
-
+def crear_directorio(directorio):
+    if not os.path.exists(directorio_destino):
+        os.makedirs(directorio_destino)
+        print ("creando directorio.... {}".format(directorio_destino))    
+    
 
 def limpiar_graficas(obj_config):
     ''' limpia graficos de la carpeta /graficos/ y deja backup en
@@ -40,14 +44,11 @@ def limpiar_graficas(obj_config):
     directorio_base = obj_config.get('data', 'directorio_base')
     
     directorio_destino = os.path.join(directorio_base, 'backup')
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
+
         
     directorio_destino = os.path.join(directorio_base, 'backup', carpeta_backup)
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
     
     now = datetime.now()
     ahora = now.strftime("%Y%m%d_%H%M")
@@ -66,17 +67,13 @@ def limpiar_graficas(obj_config):
                 directorio_raiz = os.path.join(directorio_base, 'backup', carpeta_backup)
                 for directorio in directorios:
                     directorio_destino = os.path.join(directorio_raiz, directorio)
-                    if not os.path.exists(directorio_destino):
-                        os.makedirs(directorio_destino)
-                        print ("creando directorio.... {}".format(directorio_destino))                    
+                    crear_directorio(directorio_destino)                 
                     directorio_raiz = os.path.join(directorio_raiz, directorio)
                 
                 file_source = os.path.join(path, archivo)
                 
                 directorio_destino = os.path.join(directorio_raiz, ahora)
-                if not os.path.exists(directorio_destino):
-                    os.makedirs(directorio_destino)
-                    print ("creando directorio.... {}".format(directorio_destino))
+                crear_directorio(directorio_destino)
                 
                 file_dest = os.path.join(directorio_raiz, ahora, archivo)
                 shutil.move(file_source, file_dest)
@@ -118,19 +115,13 @@ def graficar_valor_medias(obj_config, valor, temporalidad='D', meses=24, media=N
     quotes = quotes[(quotes.index >= date1) & (quotes.index <= date2)]
         
     directorio_destino = os.path.join(directorio_base, 'graficos')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
 
     directorio_destino = os.path.join(directorio_base, 'graficos', 'medias')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))        
+    crear_directorio(directorio_destino)    
     
     directorio_destino = os.path.join(directorio_base, 'graficos', 'medias', temporalidad)    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
     
     cierre = [d for d in quotes['cierre']]
     sma50 = [d for d in quotes['sma[50]']]
@@ -210,8 +201,6 @@ def graficar_valor_medias(obj_config, valor, temporalidad='D', meses=24, media=N
 
 
 def grafico_simple(valor,titulo_x,titulo_y,data,tipo="linea"):
-
-    
     
     x = np.arange(0,len(data))
     plt.axes()  # Definimos la posicion de los ejes
@@ -232,12 +221,8 @@ def graficar_horas_max_min(config, valor,data,titulo,fechas):
     ''' grafica las horas donde se dan los maximos y minimos de un valor 
     resultado en graficos/max-min '''
     
-    
     horas = ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23']
-    configuracion = 'configuracion.cfg'
-    # LECTURA DE VALORES DE CONFIGURACION
-    directorio_base = config.get('data', 'directorio_base')
-            
+    directorio_base = config.get('data', 'directorio_base')  
 
     plt.axes()  # Definimos la posicion de los ejes
     plt.bar(horas, data)  # Dibujamos el grafico de barras
@@ -247,14 +232,11 @@ def graficar_horas_max_min(config, valor,data,titulo,fechas):
 
 
     directorio_destino = os.path.join(directorio_base, 'graficos', 'max_min')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
         
     filename_result =os.path.join(directorio_base, 'graficos', 'max_min', "{}_{}.png".format(valor,titulo))
     print("generando grafico horas... {}".format(filename_result)) 
-    plt.savefig(filename_result)   # save the figure to file    
-    # plt.show()
+    plt.savefig(filename_result)
     plt.close()
 
     
@@ -284,10 +266,8 @@ def graficar_mejor_hora(obj_config, grafico, data):
     plt.ylabel('variacion de pips')
 
     directorio_destino = os.path.join(directorio_base, 'graficos', 'horas')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
-        
+    crear_directorio(directorio_destino)
+    
     filename_result = os.path.join(directorio_base, 'graficos', 'horas', "{}.png".format(data[0][0]))
     print("generando grafico horas... {}".format(filename_result)) 
     plt.savefig(filename_result)   # save the figure to file
@@ -357,19 +337,13 @@ def graficar_valor_horario(config, valor, dias = None, media = None):
     quotes = quotes[(quotes.index >= date1) & (quotes.index <= date2)]
 
     directorio_destino = os.path.join(directorio_base, 'graficos')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
 
     directorio_destino = os.path.join(directorio_base, 'graficos', 'valores')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))        
+    crear_directorio(directorio_destino)      
     
     directorio_destino = os.path.join(directorio_base, 'graficos', 'valores', temporalidad)    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
         
     fig, ax = plt.subplots(figsize=(24, 12))
 
@@ -441,11 +415,10 @@ def graficar_valor_horario(config, valor, dias = None, media = None):
 
     fig.autofmt_xdate()
 
-    filename_result = directorio_destino = os.path.join(directorio_base, 'graficos', 'valores', temporalidad, "{}.png".format(valor))
+    filename_result = os.path.join(directorio_base, 'graficos', 'valores', temporalidad, "{}.png".format(valor))
       
     print("generando.... {}".format(filename_result)) 
-    plt.savefig(filename_result)   # save the figure to file
-    # plt.show()
+    plt.savefig(filename_result)
     plt.close()
 
 
@@ -457,8 +430,7 @@ def graficar_valor_semanal(config, valor, annos = 3,  media = None):
     directorio_base = config.get('data', 'directorio_base')
     
     filename = os.path.join(directorio_base,'csv',temporalidad,"{}.csv".format(valor))
-    
-    
+
     # every monday
     mondays = MonthLocator()
     days_fmt = DateFormatter("%d %b %y")
@@ -495,19 +467,13 @@ def graficar_valor_semanal(config, valor, annos = 3,  media = None):
     
     titulo = "{} ( {} ) De {} a {}".format(valor,temporalidad,date1,date2)
     directorio_destino = os.path.join(directorio_base, 'graficos')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
 
     directorio_destino = os.path.join(directorio_base, 'graficos', 'valores')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))        
+    crear_directorio(directorio_destino)       
     
     directorio_destino = os.path.join(directorio_base, 'graficos', 'valores', temporalidad)    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
         
     fig, ax = plt.subplots(figsize=(24, 12))
 
@@ -578,7 +544,7 @@ def graficar_valor_semanal(config, valor, annos = 3,  media = None):
 
     fig.autofmt_xdate()
 
-    filename_result = directorio_destino = os.path.join(directorio_base, 'graficos', 'valores', temporalidad, "{}.png".format(valor))
+    filename_result = os.path.join(directorio_base, 'graficos', 'valores', temporalidad, "{}.png".format(valor))
       
     print("generando.... {}".format(filename_result)) 
     plt.savefig(filename_result)
@@ -592,11 +558,9 @@ def graficar_valor_diario(config, valor, meses = 12,  media = None):
     directorio_base = config.get_directorio_base()
     
     filename = os.path.join(directorio_base,'csv',temporalidad,"{}.csv".format(valor))
-    
-    # every monday
+
     mondays = WeekdayLocator(MONDAY)
     days_fmt = DateFormatter("%d %b %y")
-
 
     quotes = pd.read_csv(filename,
                         index_col=0,
@@ -608,7 +572,6 @@ def graficar_valor_diario(config, valor, meses = 12,  media = None):
         sma = fb.get_sma_periodo(int(media),quotes['cierre'])
         quotes['sma'] = sma
         
-     
     date2 = datetime.now()
     date1 = date2 - dateutil.relativedelta.relativedelta(months=meses)
     
@@ -620,28 +583,20 @@ def graficar_valor_diario(config, valor, meses = 12,  media = None):
     quotes = quotes[(quotes.index >= date1) & (quotes.index <= date2)]
 
     directorio_destino = os.path.join(directorio_base, 'graficos')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
 
     directorio_destino = os.path.join(directorio_base, 'graficos', 'valores')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))        
+    crear_directorio(directorio_destino)       
     
     directorio_destino = os.path.join(directorio_base, 'graficos', 'valores', temporalidad)    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
         
     fig, ax = plt.subplots(figsize=(24, 12))
-
     
     x = zip(date2num(quotes.index.to_pydatetime()))
 
     ax1 = plt.subplot2grid((8,5), (0,0), colspan=5, rowspan=5)
     
-    # candlestick2_ohlc(ax,data_open[desde:],data_high[desde:],data_low[desde:],data_cierre[desde:],width=0.6)
     plot_day_summary_oclh(ax1, zip(date2num(quotes.index.to_pydatetime()),
                               quotes['apertura'], quotes['cierre'],
                               quotes['low'], quotes['high']), ticksize=5)
@@ -700,7 +655,7 @@ def graficar_valor_diario(config, valor, meses = 12,  media = None):
     
     fig.autofmt_xdate()
 
-    filename_result = directorio_destino = os.path.join(directorio_base, 'graficos', 'valores', temporalidad, "{}.png".format(valor))
+    filename_result = os.path.join(directorio_base, 'graficos', 'valores', temporalidad, "{}.png".format(valor))
       
     print("generando.... {}".format(filename_result)) 
     plt.savefig(filename_result)
@@ -708,8 +663,7 @@ def graficar_valor_diario(config, valor, meses = 12,  media = None):
 
 
 def grafico_correlacion(valores, directorio_base, temporalidad, filename, meses = 12):
-    
-    # every monday
+
     mondays = MonthLocator()
     days_fmt = DateFormatter("%d %b %y")
 
@@ -719,8 +673,6 @@ def grafico_correlacion(valores, directorio_base, temporalidad, filename, meses 
                         parse_dates=True,
                         infer_datetime_format=True,
                         sep=";")
-    
-    # eliminar valores nulos por macd, emas, etc
 
     date2 = datetime.now()
     date1 = date2 - dateutil.relativedelta.relativedelta(months=meses)
@@ -733,29 +685,20 @@ def grafico_correlacion(valores, directorio_base, temporalidad, filename, meses 
     quotes = quotes[(quotes.index >= date1) & (quotes.index <= date2)]
 
     directorio_destino = os.path.join(directorio_base, 'graficos')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
 
     directorio_destino = os.path.join(directorio_base, 'graficos', 'pares')    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))        
+    crear_directorio(directorio_destino)
     
     directorio_destino = os.path.join(directorio_base, 'graficos', 'pares', temporalidad)    
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
         
     fig, ax = plt.subplots(figsize=(24, 12))
 
-    
     x = zip(date2num(quotes.index.to_pydatetime()))
 
     ax1 = plt.subplot2grid((8,5), (0,0), colspan=5, rowspan=5)
     
-    
-    # candlestick2_ohlc(ax,data_open[desde:],data_high[desde:],data_low[desde:],data_cierre[desde:],width=0.6)
     plt.plot(x, quotes['cierre'],'g',linewidth=3, label='DATA')
     plt.plot(x, quotes['ema[20]'],'r', label='EMA20')
     plt.plot(x, quotes['ema[50]'],'b', label='EMA50')
@@ -766,17 +709,10 @@ def grafico_correlacion(valores, directorio_base, temporalidad, filename, meses 
     plt.legend(loc="upper left")
     plt.grid(True)
     
-    
-
-    
-    
-    
-       
     ax2 = plt.subplot2grid((8,5), (5, 0), colspan=5) # plt.subplot(5, 1, 1, rowspan=3)
     
     plt.plot(x, quotes['rsi14'],'g')
     plt.grid(True)
-   
 
     ax3 = plt.subplot2grid((8,5), (6, 0), colspan=5) # plt.subplot(5, 1, 4)
     
@@ -784,14 +720,12 @@ def grafico_correlacion(valores, directorio_base, temporalidad, filename, meses 
     plt.plot(x, quotes['esd50'], 'g')
     plt.grid(True)
 
-    
     ax4 = plt.subplot2grid((8,5), (7, 0), colspan=5) # plt.subplot(5, 1, 5)
     
     plt.plot(x, quotes['macd'], 'r')
     plt.plot(x, quotes['macd_signal'], 'g')
 
     plt.grid(True)
-
 
     
     ax1.xaxis.set_major_locator(mondays)
@@ -818,15 +752,13 @@ def grafico_correlacion(valores, directorio_base, temporalidad, filename, meses 
     ax4.xaxis.grid(True, 'major')
     ax4.grid(True)
 
-
     fig.autofmt_xdate()
   
     valor1,valor2 = valores
-    filename_result = directorio_destino = os.path.join(directorio_base, 'graficos', 'pares', temporalidad, "{}-{}.png".format(valor1,valor2))
+    filename_result = os.path.join(directorio_base, 'graficos', 'pares', temporalidad, "{}-{}.png".format(valor1,valor2))
       
     print("generando.... {}".format(filename_result)) 
     plt.savefig(filename_result)
-
     plt.close()
     
     
@@ -844,20 +776,14 @@ def combinar_valores(config, valores,temporalidad, meses=12):
     filename2 = os.path.join(directorio_base, 'csv', temporalidad, fname2 + '.csv')        
     
     dir_filename_result = os.path.join(directorio_base, 'csv', 'pares')
-    if not os.path.exists(dir_filename_result):
-        os.makedirs(dir_filename_result)
-        print ("creando directorio.... {}".format(dir_filename_result))
+    crear_directorio(dir_filename_result)
         
     dir_filename_result = os.path.join(directorio_base, 'csv', 'pares', temporalidad)
-    if not os.path.exists(dir_filename_result):
-        os.makedirs(dir_filename_result)
-        print ("creando directorio.... {}".format(dir_filename_result))
+    crear_directorio(dir_filename_result)
     
     dir_filename_result = os.path.join(directorio_base, 'csv', 'pares', temporalidad)
-    if not os.path.exists(dir_filename_result):
-        os.makedirs(dir_filename_result)
-        print ("creando directorio.... {}".format(dir_filename_result))
-        
+    crear_directorio(dir_filename_result)
+
     filename3 = os.path.join(directorio_base, 'csv', 'pares', temporalidad, "{}-{}.csv".format(fname1,fname2))   
 
     file_1 = pd.read_csv(filename1,

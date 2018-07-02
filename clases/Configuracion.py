@@ -21,13 +21,11 @@ class CsvData():
 
         
     def get_valores_by_tipo(self,tipos=None):        
-        '''valor, lotes, margen, spread, tp_spread, tipo, codigo, nombre, descripcion = row'''
         if tipos is None: return self.__data 
         return [row for row in self.__data if row[5] in tipos]
         
 
     def get_valores_by_valor(self,valores=None):        
-        '''valor, lotes, margen, spread, tp_spread, tipo, codigo, nombre, descripcion = row'''
         if valores is None: return self.__data         
         return [row for row in self.__data if row[0] in valores]
 

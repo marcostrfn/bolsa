@@ -15,7 +15,7 @@ if __name__ == '__main__':
     obj_csv = CsvData()
     obj_config = Configuracion()
     
-    fd.graficar_maximos_minimos(obj_config)
+    fd.graficar_maximos_minimos(obj_config,obj_csv)
     
 
     

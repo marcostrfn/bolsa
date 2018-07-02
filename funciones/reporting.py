@@ -22,6 +22,15 @@ import StringIO
 import datetime
 import ConfigParser
 
+
+
+def crear_directorio(directorio):
+    if not os.path.exists(directorio_destino):
+        os.makedirs(directorio_destino)
+        print ("creando directorio.... {}".format(directorio_destino))   
+        
+        
+        
 def add_page_number(canvas, doc):
     """
     Add the page number
@@ -217,9 +226,7 @@ def crea_report(obj_config, medias, horas, pivot):
     directorio_base = obj_config.get('data', 'directorio_base')
     
     directorio_destino = os.path.join(directorio_base, 'graficos', 'reporte')
-    if not os.path.exists(directorio_destino):
-        os.makedirs(directorio_destino)
-        print ("creando directorio.... {}".format(directorio_destino))
+    crear_directorio(directorio_destino)
                 
     
     ahora = datetime.datetime.now().strftime("%Y%m%d_%H%M")

@@ -3,7 +3,6 @@
 
 from __future__ import print_function
 from datetime import datetime, timedelta
-from time import mktime
 import urllib
 import json
 import os
@@ -15,25 +14,28 @@ import bolsa as fb
 import graficos as fg
 
 
-
+def crear_directorio(directorio):
+    if not os.path.exists(directorio_destino):
+        os.makedirs(directorio_destino)
+        print ("creando directorio.... {}".format(directorio_destino))  
+        
 # graficar maximo minimos
-def graficar_maximos_minimos(obj_config):
+def graficar_maximos_minimos(obj_config, obj_csv):
 	
 	valores_a_procesar = obj_config.get_valores_calculo()
 	valores = obj_csv.get_valores_by_valor(valores_a_procesar)	
-	resultados = []	
 	for row_valor in valores:
 		valor = row_valor[0]	 
 		horas_maximo = [0] * 24
 		horas_minimo = [0] * 24					 
-		fechaDesde = 0
-		fechaHasta = 0
+		fecha_desde = 0
+		fecha_hasta = 0
 			
-		data = fd.cargar_valores(obj_config, valor, '60')
+		data = cargar_valores(obj_config, valor, '60')
 					  
 		fecha = data['fecha'][0].split(' ')   
 		dia_old = fecha[0]		   
-		fechaDesde = dia_old
+		fecha_desde = dia_old
 			
 		maximo_high = 0
 		maximo_low = 100000
@@ -62,18 +64,17 @@ def graficar_maximos_minimos(obj_config):
 				minimo_dia = 100000
 				hora_dia_maximo = None
 				hora_dia_minimo = None					
-				dia_dia_maximo = None
-				dia_dia_minimo = None
+				
 				for a in valores_diarios:
-					dDia, dHora, d_maximo_high, d_maximo_low = a
+					d_dia, d_hora, d_maximo_high, d_maximo_low = a
 					if d_maximo_high > maximo_dia: 
 						maximo_dia = d_maximo_high
-						hora_dia_maximo = dHora
-						dia_dia_maximo = dDia
+						hora_dia_maximo = d_hora
+						dia_dia_maximo = d_dia
 					if d_maximo_low < minimo_dia: 
 						minimo_dia = d_maximo_low
-						hora_dia_minimo = dHora
-						dia_dia_minimo = dDia
+						hora_dia_minimo = d_hora
+						dia_dia_minimo = d_dia
 
 				try:
 					horas_maximo[int(hora_dia_maximo)] += 1
@@ -96,16 +97,14 @@ def graficar_maximos_minimos(obj_config):
 				if low < maximo_low: maximo_low = low
 					
 				valores_diarios.append((dia, hora[0], maximo_high, maximo_low)) 
-				fechaHasta = dia
+				fecha_hasta = dia
 					
-		fechas = "de {} a {}".format(fechaDesde,fechaHasta)
+		fechas = "de {} a {}".format(fecha_desde,fecha_hasta)
 		fg.graficar_horas_max_min(obj_config, valor, horas_maximo,'maximos',fechas)
 		fg.graficar_horas_max_min(obj_config, valor,horas_minimo,'minimos',fechas)	
 
 # graficar valores
 def graficar_valores(obj_config):
-	
-	directorio_base = obj_config.get_directorio_base()
 	procesar = obj_config.get_valores_calculo()
 	
 	for valor in procesar:
@@ -116,8 +115,6 @@ def graficar_valores(obj_config):
 		
 		
 def graficar_valores_pares(obj_config):
-	
-	directorio_base = obj_config.get_directorio_base()
 	procesar = obj_config.get_valores_calculo()
 
 	C = itertools.permutations(procesar, 2)
@@ -181,9 +178,7 @@ def descargar_datos(obj_config,obj_csv):
 				
 			filename = valor + '.json'
 			directorio_destino = os.path.join(directorio_base, 'data', resolucion)
-			if not os.path.exists(directorio_destino):
-				os.makedirs(directorio_destino)
-				print ("creando directorio.... {}".format(directorio_destino))
+			crear_directorio(directorio_destino)
 				
 			filename = os.path.join(directorio_destino, filename)
 			print ("guardando archivo {}".format(filename))
@@ -390,9 +385,7 @@ def procesar_valor(obj_config, valor, codigo, resolucion):
 	ema400 = fb.get_ema_periodo(400, cierre)
 	
 	directorio_destino = os.path.join(directorio_base, 'csv', resolucion)	
-	if not os.path.exists(directorio_destino):
-		os.makedirs(directorio_destino)
-		print ("creando directorio.... {}".format(directorio_destino))
+	crear_directorio(directorio_destino)
 	
 
 	file_path = os.path.join(directorio_base, 'csv', resolucion, fname + '.csv')	
@@ -469,9 +462,7 @@ def escribir_csv_resultados(obj_config, resultados, escribir=False):
 	directorio_base = obj_config.get_directorio_base()
 	
 	directorio_destino = os.path.join(directorio_base, 'result')
-	if not os.path.exists(directorio_destino):
-		os.makedirs(directorio_destino)
-		print ("creando directorio.... {}".format(directorio_destino))
+	crear_directorio(directorio_destino)
 	
 	filename = os.path.join(directorio_base, 'result', 'medias.csv')
 	with open(filename, 'wb') as csvfile:
@@ -547,9 +538,7 @@ def escribir_csv_resultados_hora(obj_config, resultados):
 	directorio_base = obj_config.get_directorio_base()
 
 	directorio_destino = os.path.join(directorio_base, 'result')
-	if not os.path.exists(directorio_destino):
-		os.makedirs(directorio_destino)
-		print ("creando directorio.... {}".format(directorio_destino))
+	crear_directorio(directorio_destino)
 	
 	filename = os.path.join(directorio_base, 'result', 'horas.csv')
 	with open(filename, 'wb') as csvfile:
@@ -622,9 +611,7 @@ def escribir_csv_resultados_pivot(obj_config, resultados):
 	directorio_base = obj_config.get_directorio_base()
 
 	directorio_destino = os.path.join(directorio_base, 'result')
-	if not os.path.exists(directorio_destino):
-		os.makedirs(directorio_destino)
-		print ("creando directorio.... {}".format(directorio_destino))
+	crear_directorio(directorio_destino)
 	
 	filename = os.path.join(directorio_base, 'result', 'pivot.csv')
 	print ("creando fichero.... {}".format(filename))
