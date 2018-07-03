@@ -4,6 +4,8 @@
 
 from __future__ import print_function
 import funciones.data as fd
+import funciones.graficos as fg
+from funciones import reporting as fr
 from clases.Configuracion import Configuracion, CsvData
 import time
 
