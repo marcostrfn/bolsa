@@ -1,8 +1,12 @@
 #! /usr/bin/env/python
 # -*- coding: utf-8 -*-
 
-import os
 import sys
+import os
+
+path_src = os.path.join(os.path.dirname(os.path.abspath(__file__)),'..')
+sys.path.append(path_src)
+
 import csv
 import pandas as pd
 import ConfigParser

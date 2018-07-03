@@ -31,11 +31,9 @@ class CsvData():
 
 
 
-
-
 class Configuracion():
     
-    __configuracion = os.path.join(os.path.dirname(os.path.abspath(__file__)),'config.cfg')
+    __configuracion = os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','config.cfg')
 
     def __init__(self):
         self.__config = ConfigParser.ConfigParser()

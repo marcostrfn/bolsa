@@ -1,10 +1,14 @@
 #! /usr/bin/env/python
 # -*- coding: utf-8 -*-
 
-
 from __future__ import print_function
-from funciones import reporting as fr
+import sys
+import os
 
+path_src = os.path.join(os.path.dirname(os.path.abspath(__file__)),'..')
+sys.path.append(path_src)
+
+from funciones import reporting as fr
 from clases.Configuracion import Configuracion, CsvData
 
 if __name__ == '__main__':
