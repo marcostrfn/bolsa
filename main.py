@@ -48,7 +48,7 @@ if __name__ == '__main__':
     elapsed = done - start
     tiempos.append(('limpiar_graficas',elapsed))
 
-    
+
     start = time.time()
     fd.descargar_datos(obj_config,obj_csv)
     done = time.time()
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     elapsed = done - start
     tiempos.append(('graficar_valores',elapsed))
      
- 
+     
     start = time.time()
     fd.graficar_valores_pares(obj_config)
     done = time.time()
@@ -113,6 +113,7 @@ if __name__ == '__main__':
     elapsed = done - start
     tiempos.append(('graficar_maximos_minimos',elapsed))
 
+
     start = time.time()
     fd.diferencia_cierre_horas(obj_config, obj_csv)
     done = time.time()
@@ -128,6 +129,4 @@ if __name__ == '__main__':
 
 
     for t in tiempos:   
-        print (t)
-        
-        
+        print (t)  

@@ -225,12 +225,12 @@ def crea_report(obj_config, medias, horas, pivot):
     
     directorio_base = obj_config.get('data', 'directorio_base')
     
-    directorio_destino = os.path.join(directorio_base, 'graficos', 'reporte')
+    directorio_destino = os.path.join(directorio_base, 'result', 'reporte')
     crear_directorio(directorio_destino)
                 
     
     ahora = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-    filename = os.path.join(directorio_base, 'graficos', 'reporte', "report_{}.pdf".format(ahora))
+    filename = os.path.join(directorio_base, 'result', 'reporte', "report_{}.pdf".format(ahora))
     
     stylesheet = getSampleStyleSheet()
     
