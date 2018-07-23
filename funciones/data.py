@@ -10,7 +10,7 @@ import json
 import os
 import ssl
 import csv
-# import ConfigParser
+
 import itertools
 import bolsa as fb
 import graficos as fg
@@ -107,10 +107,14 @@ def procesa_diferencia_horaria(dir_base, hora_inicio, hora_final, hora_destino, 
 
 
 
-def diferencia_cierre_horas(obj_config, obj_csv):
+def diferencia_cierre_horas(obj_config, obj_csv, valor=None):
     dir_base = obj_config.get_directorio_base()
     
-    valores_a_procesar = ['DE30','US500','OIL.WTI','EURUSD']        
+    if valor is None:
+        valores_a_procesar = ['DE30','US500','OIL.WTI','EURUSD']
+    else:
+        valores_a_procesar = valor
+              
 
     horas = [(8,8,21),(8,9,21),(8,10,21),(8,12,21),(8,16,21),
             (9,9,21),(9,10,21),(9,12,21),

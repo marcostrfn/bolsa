@@ -824,7 +824,7 @@ def combinar_valores(config, valores,temporalidad, meses=12):
     rsi50 = fb.calcular_rsi(50, cierre)
        
     estocastico_sk_14, estocastico_sd_14 = fb.calcular_estocastico(cierre, high, low, 14, 3)
-    estocastico_sk_50, estocastico_sd_50 = fb.calcular_estocastico(cierre, high, low, 20, 3)    
+    estocastico_sk_50, estocastico_sd_50 = fb.calcular_estocastico(cierre, high, low, 5, 3)    
             
     #calcula emas de 5 a 200
     sma5 = fb.get_sma_periodo(5,cierre)

@@ -35,8 +35,11 @@ class Configuracion():
     
     __configuracion = os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','config.cfg')
 
-    def __init__(self):
+    def __init__(self, file=None):
         self.__config = ConfigParser.ConfigParser()
+        if file is not None:
+            self.__configuracion = os.path.join(os.path.dirname(os.path.abspath(__file__)),'..',file)
+            
         self.__config.read(self.__configuracion)
         
     

@@ -247,11 +247,13 @@ def crea_report(obj_config, medias, horas, pivot):
     path_valores_par = os.path.join(directorio_base, 'graficos', 'pares', 'D')
     path_valores_horas = os.path.join(directorio_base, 'graficos', 'horas')
     
-    
-    os.chdir(path_valores_par)
     pictures = []
-    for file in glob.glob("*.png"):
-        pictures.append(os.path.join(path_valores_par,file))
+    try:
+        os.chdir(path_valores_par)
+        for file in glob.glob("*.png"):
+            pictures.append(os.path.join(path_valores_par,file))
+    except:
+        pass
     
     os.chdir(path_valores_horas)
     pictures_mh = []
@@ -272,10 +274,11 @@ def crea_report(obj_config, medias, horas, pivot):
         story.append(Image(pic, width, height))
         story.append(PageBreak())  
     
-    story.append(Paragraph('PARES', stylesheet['Title']))
-    for pic in pictures:
-        story.append(Image(pic, width, height))
-        story.append(PageBreak())
+    if len(pictures) > 0:
+        story.append(Paragraph('PARES', stylesheet['Title']))
+        for pic in pictures:
+            story.append(Image(pic, width, height))
+            story.append(PageBreak())
 
     doc.build(story, onLaterPages=add_page_number)
     print ("creando {}".format(filename))
